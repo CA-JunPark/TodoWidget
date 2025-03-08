@@ -115,7 +115,6 @@ local.properties
 node_modules
 *.log
 .nvm
-package-lock.json
 
 # OS X
 .DS_Store
@@ -206,3 +205,5 @@ fix_*.patch
 
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/
+
+expo-env.d.ts
