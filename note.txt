@@ -1,0 +1,5 @@
+npx expo prebuild
+npx expo run:android
+    path length limitation in CMake
+    put the root folder of the project close to C://
+    
