@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TodoWidget",
-    "slug": "TodoWidget",
+    "name": "todowidget",
+    "slug": "todowidget",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.junpark5786.todowidget"
     },
     "web": {
       "bundler": "metro",
