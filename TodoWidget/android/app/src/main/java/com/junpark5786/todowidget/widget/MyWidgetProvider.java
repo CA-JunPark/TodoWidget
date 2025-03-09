@@ -17,7 +17,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
             // Inflate the widget layout with the new keyword
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             // Set default text (if desired)
-            views.setTextViewText(R.id.widget_text, "Default Text");
+            // views.setTextViewText(R.id.widget_text, "Default Text");
             // Update the widget
             appWidgetManager.updateAppWidget(widgetId, views);
         }

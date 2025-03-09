@@ -1,0 +1,82 @@
+Create Widget Files
+1. AppWidgetProvider
+my-app/
+├── android/
+│   └── app/
+│       └── src/
+│           └── main/
+│               ├── java/
+│               │   └── com/
+│               │         └── yourapp/
+│               │             └── widget/
+│               │                  └── MyWidgetProvider.java # create
+│               └── res/
+│                   ├── layout/
+│                   │   └── widget_layout.xml # create
+│                   └── xml/
+│                       └── my_widget_info.xml # create
+
+2. Register Widget in AndroidManifest.xml
+my-app/
+├── android/
+│   └── app/
+│       └── src/
+│           └── main/
+│               └── AndroidManifest.xml # update
+
+Inside the <application> tag, add:
+    <receiver
+        android:name=".widget.MyWidgetProvider"
+        android:exported="true"
+        android:label="My React Native Widget">
+        <intent-filter>
+            <!-- Required for widget updates -->
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            <!-- Optional: custom action to trigger updates -->
+            <action android:name="com.yourcompany.yourapp.ACTION_UPDATE_WIDGET" />
+        </intent-filter>
+        <meta-data
+            android:name="android.appwidget.provider"
+            android:resource="@xml/my_widget_info" />
+    </receiver>
+
+    <!-- If your widget uses a collection (ListView), you might need a service.
+        Example registration of a RemoteViews service:
+    <service
+        android:name="com.reactnative.yourapp.YourWidgetService"
+        android:permission="android.permission.BIND_REMOTEVIEWS" />
+    -->
+
+3. Widget update
+my-app/
+└── android/
+    └── app/
+        └── src/
+            └── main/
+                └── java/
+                    └── com/
+                        └── yourapp/
+                            └── WidgetModule.java # create
+                            └── WidgetPackage.java # create
+
+Update MainApplication.kt
+
+    import com.junpark5786.todowidget.WidgetPackage
+
+    @Override
+    protected List<ReactPackage> getPackages() {
+        @SuppressWarnings("UnnecessaryLocalVariable")
+        List<ReactPackage> packages = new PackageList(this).getPackages();
+        // Add your custom package here
+        packages.add(WidgetPackage());
+        return packages;
+    }
+
+Use the WidgetModule from JavaScript
+    import { NativeModules } from 'react-native';
+
+    const { WidgetModule } = NativeModules;
+
+    // Call the update method
+    WidgetModule.updateWidget(); 
+    # edit updateWidget method in WidgetModule.java and onReceive method in MyWidgetProvider.java to make it fuctional
