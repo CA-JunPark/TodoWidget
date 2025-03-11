@@ -19,7 +19,7 @@ export default function RootLayout() {
               headerStyle: { backgroundColor: MD3DarkTheme.colors.primary }, 
               headerTitleStyle: { color: MD3DarkTheme.colors.background },
               headerTintColor: MD3DarkTheme.colors.background
-          }} /> 
+          }} />
           </Stack>
         </PaperProvider>
       </GestureHandlerRootView>
