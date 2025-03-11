@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { View, StyleSheet, Button, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
-import { MD3DarkTheme } from 'react-native-paper';
+import { MD3DarkTheme, Text } from 'react-native-paper';
 import { useRouter } from "expo-router";
 import ReorderableList, {
   ReorderableListReorderEvent,
@@ -47,12 +47,24 @@ export default function Index() {
 
   return (
     <View style={[styles.container]}>
-      <ReorderableList
-        data={data}
-        onReorder={handleReorder}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
+      <View style={[styles.listContainer]}>
+        <Text variant="headlineLarge">Work</Text>
+        <ReorderableList
+          data={data}
+          onReorder={handleReorder}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      </View>
+      <View style={[styles.listContainer]}>
+        <Text variant="headlineLarge">Done</Text>
+        <ReorderableList
+          data={data}
+          onReorder={handleReorder}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      </View>
     </View>
   );
 }
@@ -60,8 +72,16 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: MD3DarkTheme.colors.surface,
+    paddingTop:10,
+  },
+  listContainer: {
+    flex: 1,
+    marginBottom: 10,
+    marginHorizontal: 30,
     backgroundColor: MD3DarkTheme.colors.surface,
   },
+  label:{
+    textAlign: 'left',
+  }
 });

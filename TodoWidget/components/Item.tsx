@@ -96,6 +96,8 @@ const styles = StyleSheet.create({
     item: {
         borderRadius: 10,
         alignContent: 'flex-start',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     itemText: {
         color: MD3DarkTheme.colors.onPrimary,
