@@ -6,12 +6,11 @@ import { useRouter } from "expo-router";
 import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
-  useReorderableDrag,
 } from 'react-native-reorderable-list';
 
 import Item, { ItemProps } from "../components/Item";
 
-const { WidgetModule } = NativeModules;
+// const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
 const seedData: ItemProps[] = [
@@ -22,6 +21,15 @@ const seedData: ItemProps[] = [
   { id: "3", title: "Card 3", subtitle: "Due: 2025-03-03" },
   { id: "4", title: "Card 4", subtitle: "Due: 2025-03-04" },
   { id: "5", title: "Card 5", subtitle: "Due: 2025-03-05" },
+  { id: "6", title: "Card 6", subtitle: "Due: 2025-03-06" },
+  { id: "7", title: "Card 7", subtitle: "Due: 2025-03-07" },
+  { id: "8", title: "Card 8", subtitle: "Due: 2025-03-08" },
+  { id: "9", title: "Card 9", subtitle: "Due: 2025-03-09" },
+  { id: "10", title: "Card 10", subtitle: "Due: 2025-03-10" },
+  { id: "11", title: "Card 11", subtitle: "Due: 2025-03-11" },
+  { id: "12", title: "Card 12", subtitle: "Due: 2025-03-12" },
+  { id: "13", title: "Card 13", subtitle: "Due: 2025-03-13" },
+  { id: "14", title: "Card 14", subtitle: "Due: 2025-03-14" },
 ];
 
 export default function Index() {
@@ -30,6 +38,7 @@ export default function Index() {
 
   const handleReorder = ({from, to}: ReorderableListReorderEvent) => {
     setData(value => reorderItems(value, from, to));
+    console.log("Reorder", from, to);
   };
 
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
@@ -37,27 +46,22 @@ export default function Index() {
   );
 
   return (
-    // <View style={[styles.container]}>
-    //   <Item id="7878" title="Card Title" subtitle="Due: 2025-03-09" />
-    //   <Button title="Go to Reorderable List" onPress={() => router.push('./reorderableList')} />
-    // </View>
+    <View style={[styles.container]}>
       <ReorderableList
         data={data}
         onReorder={handleReorder}
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex:1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: MD3DarkTheme.colors.surface,
-  },
-  text: {
-    color: MD3DarkTheme.colors.onPrimary,
   },
 });

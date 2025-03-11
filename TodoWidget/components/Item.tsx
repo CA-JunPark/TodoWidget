@@ -75,7 +75,7 @@ const Item: React.FC<ItemProps> = memo(({id, title, subtitle}) => {
                                 { backgroundColor: priorityColors[priorityOptions.indexOf(priority)] }
                             ]}
                         >
-                            <Text style={styles.text}>{priority}</Text>
+                            <Text style={styles.itemText}>{priority}</Text>
                         </Pressable>
                     </Animated.View>
                 )}
@@ -86,23 +86,14 @@ const Item: React.FC<ItemProps> = memo(({id, title, subtitle}) => {
 });
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: MD3DarkTheme.colors.surface,
-    },
-    text: {
-        color: MD3DarkTheme.colors.onPrimary,
-    },
     itemContainer: {
         backgroundColor: MD3DarkTheme.colors.primary,
-        width: '80%',
         borderRadius: 10,
         height: 'auto',
+        width: 300,
+        marginVertical: 10,
     },
     item: {
-        width: 'auto',
         borderRadius: 10,
         alignContent: 'flex-start',
     },
