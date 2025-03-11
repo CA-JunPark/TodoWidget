@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { View, StyleSheet, Button, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
-import { MD3DarkTheme, Text } from 'react-native-paper';
+import { MD3DarkTheme, Text, FAB } from 'react-native-paper';
 import { useRouter } from "expo-router";
 import ReorderableList, {
   ReorderableListReorderEvent,
@@ -65,6 +65,11 @@ export default function Index() {
           keyExtractor={item => item.id}
         />
       </View>
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => console.log('Pressed')}
+      />
     </View>
   );
 }
@@ -83,5 +88,11 @@ const styles = StyleSheet.create({
   },
   label:{
     textAlign: 'left',
-  }
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
 });
