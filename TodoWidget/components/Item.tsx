@@ -12,12 +12,13 @@ export interface ItemProps {
     id: string;
     title: string;
     subtitle: string;
+    isDone: boolean
 }
   
-const Item: React.FC<ItemProps> = memo(({id, title, subtitle}) => {
+const Item: React.FC<ItemProps> = memo(({id, title, subtitle, isDone}) => {
     const drag = useReorderableDrag();
 
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState(isDone);
     const [priority, setPriority] = useState('');
 
     const priorityOptions = ['', 'H', 'M', 'L'];
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         height: 'auto',
         width: 300,
-        marginVertical: 10,
+        marginVertical: 11,
     },
     item: {
         borderRadius: 10,
