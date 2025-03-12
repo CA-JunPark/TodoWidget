@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Button, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
 import { MD3DarkTheme, Text, FAB } from 'react-native-paper';
@@ -7,6 +7,7 @@ import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
 } from 'react-native-reorderable-list';
+import * as SQLite from 'expo-sqlite';
 
 import Item, { ItemProps } from "../../components/Item";
 
@@ -25,6 +26,23 @@ const seedData = [
 ];
 
 export default function Index() {
+  
+  const initDB = async () => {
+    const db = await SQLite.openDatabaseAsync('todo.db');
+    await db.execAsync(`
+      INSERT INTO todo (title, due, done) VALUES ('New Item', 'Due: 2025-03-12', 0);
+    `);
+    const result1 = await db.getAllAsync("SELECT * FROM todo");
+    console.log("Get all", result1);
+    await db.execAsync(`DELETE FROM todo;`)
+    const result2 = await db.getAllAsync("SELECT * FROM todo");
+    console.log("Get all", result2);
+  };
+  useEffect(() => {
+    initDB();
+  }, []);
+
+
   const router = useRouter();
   const [workData, setWorkData] = useState(seedData);
 
