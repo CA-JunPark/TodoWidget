@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, Button, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
 import { MD3DarkTheme, Text, FAB } from 'react-native-paper';
@@ -7,44 +7,45 @@ import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
 } from 'react-native-reorderable-list';
+import * as SQLite from 'expo-sqlite';
 
 import Item, { ItemProps } from "../../components/Item";
 
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
-const seedData = [
-  { id: "7", title: "Card 7", subtitle: "Due: 2025-03-07", isDone: true },
-  { id: "8", title: "Card 8", subtitle: "Due: 2025-03-08", isDone: true },
-  { id: "9", title: "Card 9", subtitle: "Due: 2025-03-09", isDone: true },
-  { id: "10", title: "Card 10", subtitle: "Due: 2025-03-10", isDone: true },
-  { id: "11", title: "Card 11", subtitle: "Due: 2025-03-11", isDone: true },
-  { id: "12", title: "Card 12", subtitle: "Due: 2025-03-12", isDone: true },
-  { id: "13", title: "Card 13", subtitle: "Due: 2025-03-13", isDone: true },
-  { id: "14", title: "Card 14", subtitle: "Due: 2025-03-14", isDone: true },
+const seedData: ItemProps[] = [
+  { id: 7878, done: 1, title: 'Todo Item 1', note: '', priority: '', notification: '', due: '2021-12-22', when_created: '', order_index: 0 },
+  { id: 0, done: 1, title: 'Todo Item 2', note: '', priority: '', notification: '', due: '2021-12-23', when_created: '', order_index: 1 },
+  { id: 1, done: 1, title: 'Todo Item 3', note: '', priority: '', notification: '', due: '2021-12-24', when_created: '', order_index: 2 },
+  { id: 2, done: 1, title: 'Todo Item 4', note: '', priority: '', notification: '', due: '2021-12-25', when_created: '', order_index: 3 },
+  { id: 3, done: 1, title: 'Todo Item 5', note: '', priority: '', notification: '', due: '2021-12-26', when_created: '', order_index: 4 },
+  { id: 4, done: 1, title: 'Todo Item 6', note: '', priority: '', notification: '', due: '2021-12-27', when_created: '', order_index: 5 },
+  { id: 5, done: 1, title: 'Todo Item 7', note: '', priority: '', notification: '', due: '2021-12-28', when_created: '', order_index: 6 },
+  { id: 6, done: 1, title: 'Todo Item 8', note: '', priority: '', notification: '', due: '2021-12-29', when_created: '', order_index: 7 },
 ];
 
-export default function Index() {
+export default function Done() {
   const router = useRouter();
-  const [doneData, setDoneData] = useState(seedData);
+  const [workData, setWorkData] = useState(seedData);
 
-  const handleReorderDone = ({from, to}: ReorderableListReorderEvent) => {
-    setDoneData(value => reorderItems(value, from, to));
+  const handleReorderWork = ({from, to}: ReorderableListReorderEvent) => {
+    setWorkData(value => reorderItems(value, from, to));
     console.log("Reorder", from, to);
   };
 
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
-    <Item {...item} />
+    <Item item={item} />
   );
 
   return (
     <View style={[styles.container]}>
       <View style={[styles.listContainer]}>
         <ReorderableList
-          data={doneData}
-          onReorder={handleReorderDone}
+          data={workData}
+          onReorder={handleReorderWork}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id.toString()}
         />
       </View>
       <FAB

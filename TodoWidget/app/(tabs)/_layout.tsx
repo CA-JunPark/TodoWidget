@@ -18,7 +18,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="done"
         options={{
-          title: 'Done',
+          title: 'Done List',
           headerStyle: { backgroundColor: MD3DarkTheme.colors.primary }, 
           headerTitleStyle: { color: MD3DarkTheme.colors.background },
           headerTintColor: MD3DarkTheme.colors.background,

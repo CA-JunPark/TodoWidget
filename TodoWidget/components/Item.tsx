@@ -5,21 +5,25 @@ import AnimatedPressable from './AnimatedPressable';
 
 import { useReorderableDrag } from 'react-native-reorderable-list';
 
-  
 const { WidgetModule } = NativeModules;
 
 export interface ItemProps {
-    id: string;
-    title: string;
-    subtitle: string;
-    isDone: boolean
+    id: number;
+    done: number;
+    title: string | null;
+    note: string;
+    priority: string;
+    notification: string;
+    due: string;
+    when_created: string;
+    order_index: number;
 }
   
-const Item: React.FC<ItemProps> = memo(({id, title, subtitle, isDone}) => {
+const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const drag = useReorderableDrag();
 
-    const [checked, setChecked] = useState(isDone);
-    const [priority, setPriority] = useState('');
+    const [checked, setChecked] = useState(item.done === 1);
+    const [priority, setPriority] = useState(item.priority);
 
     const priorityOptions = ['', 'H', 'M', 'L'];
     const priorityColors = ['#008000', '#8B0000', '#FFFF00', '#008000']; // Example colors
@@ -54,8 +58,8 @@ const Item: React.FC<ItemProps> = memo(({id, title, subtitle, isDone}) => {
             onLongPress={drag}
         >
             <Card.Title
-                title={title}
-                subtitle={subtitle}
+                title={item.title}
+                subtitle={item.due}
                 style={styles.item}
                 titleStyle={styles.itemText}
                 subtitleStyle={styles.itemSubText}

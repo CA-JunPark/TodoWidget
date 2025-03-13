@@ -14,15 +14,15 @@ import Item, { ItemProps } from "../../components/Item";
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
-const seedData = [
-  { id: "7878", title: "Card Title", subtitle: "Due: 2025-03-09", isDone: false },
-  { id: "0", title: "Card 0", subtitle: "Due: 2025-03-00", isDone: false },
-  { id: "1", title: "Card 1", subtitle: "Due: 2025-03-01", isDone: false },
-  { id: "2", title: "Card 2", subtitle: "Due: 2025-03-02", isDone: false },
-  { id: "3", title: "Card 3", subtitle: "Due: 2025-03-03", isDone: false },
-  { id: "4", title: "Card 4", subtitle: "Due: 2025-03-04", isDone: false },
-  { id: "5", title: "Card 5", subtitle: "Due: 2025-03-05", isDone: false },
-  { id: "6", title: "Card 6", subtitle: "Due: 2025-03-06", isDone: false },
+const seedData: ItemProps[] = [
+  { id: 7878, done: 0, title: 'Todo Item 1', note: '', priority: '', notification: '', due: '2021-12-22', when_created: '', order_index: 0 },
+  { id: 0, done: 0, title: 'Todo Item 2', note: '', priority: '', notification: '', due: '2021-12-23', when_created: '', order_index: 1 },
+  { id: 1, done: 0, title: 'Todo Item 3', note: '', priority: '', notification: '', due: '2021-12-24', when_created: '', order_index: 2 },
+  { id: 2, done: 0, title: 'Todo Item 4', note: '', priority: '', notification: '', due: '2021-12-25', when_created: '', order_index: 3 },
+  { id: 3, done: 0, title: 'Todo Item 5', note: '', priority: '', notification: '', due: '2021-12-26', when_created: '', order_index: 4 },
+  { id: 4, done: 0, title: 'Todo Item 6', note: '', priority: '', notification: '', due: '2021-12-27', when_created: '', order_index: 5 },
+  { id: 5, done: 0, title: 'Todo Item 7', note: '', priority: '', notification: '', due: '2021-12-28', when_created: '', order_index: 6 },
+  { id: 6, done: 0, title: 'Todo Item 8', note: '', priority: '', notification: '', due: '2021-12-29', when_created: '', order_index: 7 },
 ];
 
 export default function Index() {
@@ -38,6 +38,7 @@ export default function Index() {
     const result2 = await db.getAllAsync("SELECT * FROM todo");
     console.log("Get all", result2);
   };
+
   useEffect(() => {
     initDB();
   }, []);
@@ -52,7 +53,7 @@ export default function Index() {
   };
 
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
-    <Item {...item} />
+    <Item item={item} />
   );
 
   return (
@@ -62,7 +63,7 @@ export default function Index() {
           data={workData}
           onReorder={handleReorderWork}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id.toString()}
         />
       </View>
       <FAB
