@@ -9,32 +9,36 @@ const { WidgetModule } = NativeModules;
 
 export interface ItemProps {
     id: number;
-    done: number;
+    done: number | null;
     title: string | null;
-    note: string;
-    priority: string;
-    notification: string;
-    due: string;
-    when_created: string;
-    order_index: number;
+    note: string | null;
+    priority: string | null;
+    notification: string | null;
+    due: string | null;
+    when_created: string | null;
+    order_index: number | null;
 }
-  
+
+// React.memo ensures that the Item component only re-renders when its item prop changes.
+// TODO: put items in a state
 const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const drag = useReorderableDrag();
 
     const [checked, setChecked] = useState(item.done === 1);
-    const [priority, setPriority] = useState(item.priority);
+    const [priority, setPriority] = useState(item.priority ?? '');
 
     const priorityOptions = ['', 'H', 'M', 'L'];
     const priorityColors = ['#008000', '#8B0000', '#FFFF00', '#008000']; // Example colors
 
+    /**
+     * Update the priority immediately
+     * Trigger a simple scale animation
+     */
     const handlePriorityChange = () => {
-        // Update the priority immediately
         const currentIndex = priorityOptions.indexOf(priority);
         const nextIndex = (currentIndex + 1) % priorityOptions.length;
         setPriority(priorityOptions[nextIndex]);
 
-        // Trigger a simple scale animation
         Animated.sequence([
             Animated.timing(animatedScale, {
                 toValue: 1.2,
@@ -53,7 +57,7 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
 
     return (
         <AnimatedPressable 
-            onPress={() => console.log("Update Widget")}
+            onPress={() => console.log(item)}
             style={styles.itemContainer}
             onLongPress={drag}
         >

@@ -8,7 +8,7 @@ import ReorderableList, {
   reorderItems,
 } from 'react-native-reorderable-list';
 import * as SQLite from 'expo-sqlite';
-
+import * as todosql from '../../sqlite/todosql';
 import Item, { ItemProps } from "../../components/Item";
 
 // const { WidgetModule } = NativeModules;
@@ -26,26 +26,23 @@ const seedData: ItemProps[] = [
 ];
 
 export default function Index() {
-  
-  const initDB = async () => {
-    const db = await SQLite.openDatabaseAsync('todo.db');
-    await db.execAsync(`
-      INSERT INTO todo (title, due, done) VALUES ('New Item', 'Due: 2025-03-12', 0);
-    `);
-    const result1 = await db.getAllAsync("SELECT * FROM todo");
-    console.log("Get all", result1);
-    await db.execAsync(`DELETE FROM todo;`)
-    const result2 = await db.getAllAsync("SELECT * FROM todo");
-    console.log("Get all", result2);
+  const router = useRouter();
+  const [workData, setWorkData] = useState(seedData);
+  const [resultCount, setResultCount] = useState(0);
+  const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+
+  const initDB = () => {
+    try {
+      const db = SQLite.openDatabaseSync('todo.db');
+      setDb(db);
+    } catch (error) {
+      console.error("Error initializing database:", error);
+    }
   };
 
   useEffect(() => {
     initDB();
   }, []);
-
-
-  const router = useRouter();
-  const [workData, setWorkData] = useState(seedData);
 
   const handleReorderWork = ({from, to}: ReorderableListReorderEvent) => {
     setWorkData(value => reorderItems(value, from, to));
@@ -55,6 +52,10 @@ export default function Index() {
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
     <Item item={item} />
   );
+
+  const handleAddTodo = async() => {
+    console.log("Adding new todo");
+  };
 
   return (
     <View style={[styles.container]}>
@@ -69,7 +70,7 @@ export default function Index() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => console.log('Pressed')}
+        onPress={() => handleAddTodo()}
       />
     </View>
   );
