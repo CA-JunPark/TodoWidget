@@ -5,6 +5,8 @@ import AnimatedPressable from './AnimatedPressable';
 import { useSelectedItem } from '../states/selectedItem';
 import { useReorderableDrag } from 'react-native-reorderable-list';
 import { useRouter } from 'expo-router';
+import { CustomCheckbox } from './customCheckbox';
+import { PriorityButton } from './Priority';
 
 const { WidgetModule } = NativeModules;
 
@@ -30,38 +32,10 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const [checked, setChecked] = useState(item.done === 1);
     const [priority, setPriority] = useState(item.priority ?? '');
     
-    const priorityOptions = ['', 'H', 'M', 'L'];
-    const priorityColors = ['#008000', '#8B0000', '#FFFF00', '#008000'];
-
-    /**
-     * Update the priority immediately
-     * Trigger a simple scale animation
-     */
-    const handlePriorityChange = () => {
-        const currentIndex = priorityOptions.indexOf(priority);
-        const nextIndex = (currentIndex + 1) % priorityOptions.length;
-        setPriority(priorityOptions[nextIndex]);
-
-        Animated.sequence([
-            Animated.timing(animatedScale, {
-                toValue: 1.2,
-                duration: 100,
-                useNativeDriver: true,
-            }),
-            Animated.timing(animatedScale, {
-                toValue: 1,
-                duration: 100,
-                useNativeDriver: true,
-            })
-        ]).start();
-    };
-
     const handlePress = () => {
         setSelectedItem(item);
         router.push('/(tabs)/editItem');
     };
-
-    const animatedScale = useRef(new Animated.Value(1)).current;
 
     return (
         <AnimatedPressable 
@@ -75,26 +49,9 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
                 style={styles.item}
                 titleStyle={styles.itemText}
                 subtitleStyle={styles.itemSubText}
-                left={props => (
-                    <Checkbox 
-                        status={checked ? 'checked' : 'unchecked'} 
-                        onPress={() => setChecked(!checked)} 
-                        color={MD3DarkTheme.colors.background}
-                        uncheckedColor={MD3DarkTheme.colors.background}
-                    />
-                )}
+                left={props => CustomCheckbox({checked, setChecked})}
                 right={props => (
-                    <Animated.View style={{ transform: [{ scale: animatedScale }] }}>
-                        <Pressable 
-                            onPress={handlePriorityChange}
-                            style={[
-                                styles.priorityButton, 
-                                { backgroundColor: priorityColors[priorityOptions.indexOf(priority)] }
-                            ]}
-                        >
-                            <Text style={styles.itemText}>{priority}</Text>
-                        </Pressable>
-                    </Animated.View>
+                    <PriorityButton priority={priority} setPriority={setPriority} />
                 )}
                 rightStyle={styles.itemRight}
             />
