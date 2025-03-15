@@ -4,7 +4,6 @@ import { ItemProps } from '../components/Item';
 // import { NativeModules } from 'react-native';
 // const { WidgetModule } = NativeModules;
 
-
 // examples 
 // // add
 // const exampleItem = { id: 999, done: 0, title: 'Example Item', note: '', priority: '', notification: '', due: '2021-12-30', when_created: '', order_index: 0 };

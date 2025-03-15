@@ -2,8 +2,9 @@ import React, { memo, useRef, useState } from "react";
 import { View, StyleSheet, Pressable, NativeModules, Animated } from "react-native";
 import { MD3DarkTheme, Card, Checkbox, Text } from 'react-native-paper';
 import AnimatedPressable from './AnimatedPressable';
-
+import { useSelectedItem } from '../states/selectedItem';
 import { useReorderableDrag } from 'react-native-reorderable-list';
+import { useRouter } from 'expo-router';
 
 const { WidgetModule } = NativeModules;
 
@@ -23,12 +24,14 @@ export interface ItemProps {
 // TODO: put items in a state
 const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const drag = useReorderableDrag();
-
+    const router = useRouter();
+    
+    const { setSelectedItem } = useSelectedItem();
     const [checked, setChecked] = useState(item.done === 1);
     const [priority, setPriority] = useState(item.priority ?? '');
-
+    
     const priorityOptions = ['', 'H', 'M', 'L'];
-    const priorityColors = ['#008000', '#8B0000', '#FFFF00', '#008000']; // Example colors
+    const priorityColors = ['#008000', '#8B0000', '#FFFF00', '#008000'];
 
     /**
      * Update the priority immediately
@@ -53,11 +56,16 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
         ]).start();
     };
 
+    const handlePress = () => {
+        setSelectedItem(item);
+        router.push('/(tabs)/editItem');
+    };
+
     const animatedScale = useRef(new Animated.Value(1)).current;
 
     return (
         <AnimatedPressable 
-            onPress={() => console.log(item)}
+            onPress={() => handlePress()}
             style={styles.itemContainer}
             onLongPress={drag}
         >

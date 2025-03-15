@@ -1,7 +1,7 @@
-import { useRef, useState, useEffect } from "react";
-import { View, StyleSheet, Button, ListRenderItemInfo } from "react-native";
+import { useState, useEffect } from "react";
+import { View, StyleSheet, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
-import { MD3DarkTheme, Text, FAB } from 'react-native-paper';
+import { MD3DarkTheme, FAB } from 'react-native-paper';
 import { useRouter } from "expo-router";
 import ReorderableList, {
   ReorderableListReorderEvent,
@@ -28,7 +28,6 @@ const seedData: ItemProps[] = [
 export default function Index() {
   const router = useRouter();
   const [workData, setWorkData] = useState(seedData);
-  const [resultCount, setResultCount] = useState(0);
   const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
 
   const initDB = () => {
