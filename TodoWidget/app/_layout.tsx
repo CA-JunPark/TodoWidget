@@ -7,6 +7,10 @@ import { SQLiteProvider } from 'expo-sqlite';
 import { Suspense } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { createTableIfNotExists } from '../sqlite/todosql';
+import { en, registerTranslation } from 'react-native-paper-dates';
+
+registerTranslation('en', en);
+
 
 export default function RootLayout() {
   return (
