@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useState, useEffect, useMemo } from 'react';
 import { MD3DarkTheme, Text, IconButton } from 'react-native-paper';
 import { PaperInput } from '../../components/PaperInput';
@@ -8,8 +8,6 @@ import { PriorityButton } from '../../components/Priority';
 import { DatePickerInput} from 'react-native-paper-dates';
 
 //TODO onFocus 
-//TODO open Calendar when set due date 
-//TODO notification modal, Icon button
 
 export default function EditItem() {
   const { selectedItem } = useSelectedItem();
@@ -49,14 +47,8 @@ export default function EditItem() {
     }
   }, [selectedItem]);
 
-  // Create a debounced version of saveTextValue (delays execution by 500ms)
-  // const debouncedSave = useMemo(
-  //   () => debounce((value) => {
-  //     saveTextValue(value);
-  //     setStoredText(value);
-  //   }, 500),
-  //   []
-  // );
+  //TODO debounce
+  
   const changeDate = (d: Date | undefined) => {
     setDue(d ? d.toISOString().split('T')[0] : '');
     const newDate = new Date(d?.toISOString() || '')
@@ -81,7 +73,8 @@ export default function EditItem() {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} >
         <View style={styles.titleContainer}>
             <View style={styles.checkboxContainer}>
                 <CustomCheckbox checked={done} setChecked={setDone} />
@@ -109,26 +102,35 @@ export default function EditItem() {
           />
           <IconButton icon="close" onPress={resetNotificationDate} />
         </View>
-        <PaperInput label="Notification" value={notification} onChangeText={setNotification} /> 
-        <PaperInput label="Note" value={note} onChangeText={setNote} multiline={true} numberOfLines={5}/>
+        <View style={styles.noteContainer}>
+          <PaperInput label="Note" value={note} onChangeText={setNote} multiline={true} numberOfLines={5}/>
+        </View>
+      </ScrollView>
+      <View style={styles.createdTextContainer}>
         <Text>Created: {selectedItem?.when_created}</Text>
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flexGrow:1,
     backgroundColor: MD3DarkTheme.colors.surface,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     gap: 15,
     paddingHorizontal: 20,
+  },
+  scrollContainer: {
+    flexGrow:1,
+    justifyContent: 'flex-start',
   },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+    marginVertical: 30,
   },
   checkboxContainer: {
     alignItems: 'center',
@@ -141,7 +143,15 @@ const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15,
-    height:30
+    marginVertical: 30,
+    height:30,
+  },
+  noteContainer: {
+    gap: 10,
+    marginBottom: 15,
+  },
+  createdTextContainer: {
+    alignSelf: 'center',
+    marginBottom: 15,
   },
 });
