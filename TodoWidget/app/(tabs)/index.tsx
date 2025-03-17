@@ -15,14 +15,14 @@ import Item, { ItemProps } from "../../components/Item";
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
 const seedData: ItemProps[] = [
-  { id: 7878, done: 0, title: 'Todo Item 1', note: '', priority: '', notification: '', due: '2021-12-22', when_created: 'sdadasd', order_index: 0 },
-  { id: 0, done: 0, title: 'Todo Item 2', note: '', priority: '', notification: '', due: '2021-12-23', when_created: 'sdadasd', order_index: 1 },
-  { id: 1, done: 0, title: 'Todo Item 3', note: '', priority: '', notification: '', due: '2021-12-24', when_created: 'sdadasd', order_index: 2 },
-  { id: 2, done: 0, title: 'Todo Item 4', note: '', priority: '', notification: '', due: '2021-12-25', when_created: 'sdadasd', order_index: 3 },
-  { id: 3, done: 0, title: 'Todo Item 5', note: '', priority: '', notification: '', due: '2021-12-26', when_created: 'sdadasd', order_index: 4 },
-  { id: 4, done: 0, title: 'Todo Item 6', note: '', priority: '', notification: '', due: '2021-12-27', when_created: 'sdadasd', order_index: 5 },
-  { id: 5, done: 0, title: 'Todo Item 7', note: '', priority: '', notification: '', due: '2021-12-28', when_created: 'sdadasd', order_index: 6 },
-  { id: 6, done: 0, title: 'Todo Item 8', note: '', priority: '', notification: '', due: '2021-12-29', when_created: 'sdadasd', order_index: 7 },
+  { id: 7878, done: 0, title: 'Todo Item 1', note: '', priority: '', notification: '2021-12-22', due: '2021-12-22', when_created: 'sdadasd', order_index: 0 },
+  { id: 0, done: 0, title: 'Todo Item 2', note: '', priority: '', notification: '2021-12-23', due: '2021-12-23', when_created: 'sdadasd', order_index: 1 },
+  { id: 1, done: 0, title: 'Todo Item 3', note: '', priority: '', notification: '2021-12-24', due: '2021-12-24', when_created: 'sdadasd', order_index: 2 },
+  { id: 2, done: 0, title: 'Todo Item 4', note: '', priority: '', notification: '2021-12-25', due: '2021-12-25', when_created: 'sdadasd', order_index: 3 },
+  { id: 3, done: 0, title: 'Todo Item 5', note: '', priority: '', notification: '2021-12-26', due: '2021-12-26', when_created: 'sdadasd', order_index: 4 },
+  { id: 4, done: 0, title: 'Todo Item 6', note: '', priority: '', notification: '2021-12-27', due: '2021-12-27', when_created: 'sdadasd', order_index: 5 },
+  { id: 5, done: 0, title: 'Todo Item 7', note: '', priority: '', notification: '2021-12-28', due: '2021-12-28', when_created: 'sdadasd', order_index: 6 },
+  { id: 6, done: 0, title: 'Todo Item 8', note: '', priority: '', notification: '2021-12-29', due: '2021-12-29', when_created: 'sdadasd', order_index: 7 },
 ];
 
 export default function Index() {
