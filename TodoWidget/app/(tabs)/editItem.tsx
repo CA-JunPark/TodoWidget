@@ -103,7 +103,7 @@ export default function EditItem() {
           <IconButton icon="close" onPress={resetNotificationDate} />
         </View>
         <View style={styles.noteContainer}>
-          <PaperInput label="Note" value={note} onChangeText={setNote} multiline={true} numberOfLines={5}/>
+          <PaperInput label="Note" value={note} onChangeText={setNote} multiline={true} numberOfLines={5} style={styles.noteInput}/>
         </View>
       </ScrollView>
       <View style={styles.createdTextContainer}>
@@ -148,7 +148,11 @@ const styles = StyleSheet.create({
   },
   noteContainer: {
     gap: 10,
-    marginBottom: 15,
+    marginBottom: 15, 
+    height: 180,
+  },
+  noteInput: {
+    minHeight: 140,
   },
   createdTextContainer: {
     alignSelf: 'center',
