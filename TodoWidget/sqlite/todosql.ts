@@ -45,7 +45,7 @@ export const createTableIfNotExists = async (db: SQLite.SQLiteDatabase | null) =
     }
 };
 
-const generateMaxId = async (db: SQLite.SQLiteDatabase | null)=> {
+export const generateMaxId = async (db: SQLite.SQLiteDatabase | null)=> {
     // Get the maximum ID from the database.
     // If the database is empty, result will be null, and maxId will be set to 0.
     // If the database is not empty, result will have a maxId property with the maximum ID.
@@ -68,7 +68,7 @@ export const addTodo = async (db: SQLite.SQLiteDatabase | null, item: ItemProps)
         // Insert a new todo into the database.
         // The datetime('now') function is used to set the current date and time in the when_created column.
         await db?.runAsync('INSERT INTO todo (id, title, due, note, priority, notification, done, order_index, when_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'));',
-            [item.id, item.title ?? '', item.due ?? '', item.note ?? '', item.priority ?? '', item.notification ?? '', item.done ?? 0, item.order_index ?? 0]);
+            [item.id, item.title, item.due, item.note, item.priority, item.notification, item.done, item.order_index]);
     } catch (error) {
         console.error("Error adding todo:", error);
     }
@@ -120,11 +120,28 @@ export const updateOrderIndexById = async (db: SQLite.SQLiteDatabase | null, id:
     }
 };
 
+export const swapOrderIndices = async (db: SQLite.SQLiteDatabase | null, id1: number, id2: number) => {
+    try {
+        // Get the current order_index of the todos with the given ids
+        const [todo1, todo2] = await Promise.all([getTodoById(db, id1), getTodoById(db, id2)]);
+        if (!todo1 || !todo2) {
+            throw new Error(`One of the todos with ids ${id1} or ${id2} does not exist`);
+        }
+
+        // Swap the order_index of the two todos
+        const order_index1 = todo1.order_index;
+        const order_index2 = todo2.order_index;
+        await Promise.all([updateOrderIndexById(db, id1, order_index2), updateOrderIndexById(db, id2, order_index1)]);
+    } catch (error) {
+        console.error("Error swapping order_index:", error);
+    }
+};
+
 
 export const getAllTodos = async (db: SQLite.SQLiteDatabase | null) => {
     try {
         // Get all todos from the database.
-        const result = await db?.getAllAsync<ItemProps>("SELECT * FROM todo");
+        const result = await db?.getAllAsync<ItemProps>("SELECT * FROM todo ORDER BY order_index ASC");
         return result;
     } catch (error) {
         console.error("Error getting all todos:", error);
@@ -140,6 +157,8 @@ export const getTodoById = async (db: SQLite.SQLiteDatabase | null, id: number) 
         console.error("Error getting todo by ID:", error);
     }
 };
+
+
 
 export const deleteAll = async (db: SQLite.SQLiteDatabase | null) => {
     try {

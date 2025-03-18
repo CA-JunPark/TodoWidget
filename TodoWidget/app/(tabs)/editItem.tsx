@@ -5,7 +5,7 @@ import { PaperInput } from '../../components/PaperInput';
 import { useSelectedItem } from '../../states/selectedItem';
 import { CustomCheckbox } from '../../components/customCheckbox';
 import { PriorityButton } from '../../components/Priority';
-import { DatePickerInput} from 'react-native-paper-dates';
+import { DatePickerInput } from 'react-native-paper-dates';
 
 //TODO onFocus 
 
@@ -71,7 +71,7 @@ export default function EditItem() {
     setNotification('');
     setNotificationDate(undefined);
   }
-
+  // TODO delete button
   return (
     <KeyboardAvoidingView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer} >

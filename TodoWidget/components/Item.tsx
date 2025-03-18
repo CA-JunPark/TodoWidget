@@ -12,23 +12,22 @@ const { WidgetModule } = NativeModules;
 
 export interface ItemProps {
     id: number;
-    done: number | null;
-    title: string | null;
-    note: string | null;
-    priority: string | null;
-    notification: string | null;
-    due: string | null;
-    when_created: string | null;
-    order_index: number | null;
+    done: number;
+    title: string;
+    note: string;
+    priority: string;
+    notification: string;
+    due: string;
+    when_created: string;
+    order_index: number;
 }
 
-// React.memo ensures that the Item component only re-renders when its item prop changes.
-// TODO: put items in a state
 const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const drag = useReorderableDrag();
     const router = useRouter();
     
     const { setSelectedItem } = useSelectedItem();
+    // TODO sync with sqlite (both)
     const [checked, setChecked] = useState(item.done === 1);
     const [priority, setPriority] = useState(item.priority ?? '');
     

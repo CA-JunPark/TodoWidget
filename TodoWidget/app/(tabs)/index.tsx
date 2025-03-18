@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
-import { MD3DarkTheme, FAB } from 'react-native-paper';
-import { useRouter } from "expo-router";
+import { MD3DarkTheme, FAB, Modal, Portal, Text, IconButton, TextInput } from 'react-native-paper';
 import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
@@ -10,30 +9,22 @@ import ReorderableList, {
 import * as SQLite from 'expo-sqlite';
 import * as todosql from '../../sqlite/todosql';
 import Item, { ItemProps } from "../../components/Item";
-
+import { useTodoDB } from '../../states/todoDB';
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
-const seedData: ItemProps[] = [
-  { id: 7878, done: 0, title: 'Todo Item 1', note: '', priority: '', notification: '', due: '2021-12-22', when_created: 'sdadasd', order_index: 0 },
-  { id: 0, done: 0, title: 'Todo Item 2', note: '', priority: '', notification: '', due: '2021-12-23', when_created: 'sdadasd', order_index: 1 },
-  { id: 1, done: 0, title: 'Todo Item 3', note: '', priority: '', notification: '', due: '2021-12-24', when_created: 'sdadasd', order_index: 2 },
-  { id: 2, done: 0, title: 'Todo Item 4', note: '', priority: '', notification: '', due: '2021-12-25', when_created: 'sdadasd', order_index: 3 },
-  { id: 3, done: 0, title: 'Todo Item 5', note: '', priority: '', notification: '', due: '2021-12-26', when_created: 'sdadasd', order_index: 4 },
-  { id: 4, done: 0, title: 'Todo Item 6', note: '', priority: '', notification: '', due: '2021-12-27', when_created: 'sdadasd', order_index: 5 },
-  { id: 5, done: 0, title: 'Todo Item 7', note: '', priority: '', notification: '', due: '2021-12-28', when_created: 'sdadasd', order_index: 6 },
-  { id: 6, done: 0, title: 'Todo Item 8', note: '', priority: '', notification: '', due: '2021-12-29', when_created: 'sdadasd', order_index: 7 },
-];
-
 export default function Index() {
-  const router = useRouter();
-  const [workData, setWorkData] = useState(seedData);
-  const [db, setDb] = useState<SQLite.SQLiteDatabase | null>(null);
+  const [workData, setWorkData] = useState<ItemProps[]>([]);
+  const { db, setDb } = useTodoDB();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [input, setInput] = useState('');
 
-  const initDB = () => {
+  const initDB = async () => {
     try {
       const db = SQLite.openDatabaseSync('todo.db');
       setDb(db);
+      const data = await todosql.getAllTodos(db);
+      setWorkData(data ?? []);
     } catch (error) {
       console.error("Error initializing database:", error);
     }
@@ -43,27 +34,86 @@ export default function Index() {
     initDB();
   }, []);
 
-  const handleReorderWork = ({from, to}: ReorderableListReorderEvent) => {
+  const handleReorderWork = async ({from, to}: ReorderableListReorderEvent) => {
+    // local
     setWorkData(value => reorderItems(value, from, to));
-    console.log("Reorder", from, to);
+    // sqlite
+    await todosql.swapOrderIndices(db, workData[from].id, workData[to].id);
   };
-
+  
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
     <Item item={item} />
   );
 
   const handleAddTodo = async() => {
-    console.log("Adding new todo");
+    showModal();
+  };
+
+  const showModal = () => setModalVisible(true);
+  const hideModal = () => setModalVisible(false);
+
+  const uploadItem = async() => {
+    hideModal();
+    // trim input
+    const trimmedInput = input.trim();
+    if (!trimmedInput) return;
+    // generate new item
+    const newId = await todosql.generateMaxId(db);
+    const newItem = {
+      id: newId,
+      title: trimmedInput,
+      done: 0,
+      note: '',
+      priority: '',
+      notification: '',
+      due: '',
+      when_created: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      order_index: 0,
+    };
+    // add to work data (top)
+    if (db) {
+      workData.forEach(async (item) => {
+        item.order_index += 1;
+        await todosql.updateOrderIndexById(db, item.id, item.order_index);
+      });
+    }
+    setWorkData(prev => [newItem, ...prev]);
+    // add to sqlite
+    await todosql.addTodo(db, newItem);
+    setInput('');
+  };
+
+  // For debugging
+  const viewAll = async() => {
+    if (db) {
+      const allItems = await todosql.getAllTodos(db);
+      console.log("SQLite data:");
+      allItems?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+    }
+    console.log("Work data:");
+    workData?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
   };
 
   return (
     <View style={[styles.container]}>
+      <Portal>
+        <Modal visible={modalVisible} onDismiss={hideModal} contentContainerStyle={styles.modalStyle}>
+          <TextInput
+            mode="outlined"
+            style={styles.textInput}
+            onChangeText={(text) => setInput(text)}
+            autoFocus={true}
+            right={<TextInput.Icon icon="upload" onPress={() => uploadItem()} />}
+          />
+        </Modal>
+      </Portal>
       <View style={[styles.listContainer]}>
         <ReorderableList
           data={workData}
           onReorder={handleReorderWork}
           renderItem={renderItem}
           keyExtractor={item => item.id.toString()}
+          extraData={workData}
         />
       </View>
       <FAB
@@ -96,4 +146,19 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  modalStyle: {
+    position: 'absolute',
+    bottom: 0,
+    alignItems: 'center',
+    width: '100%',
+    height: 60,
+    flexDirection: 'row',
+  },
+  textInput: {
+    width: '95%',
+    height: 50,
+    marginVertical: 10,
+    fontSize: 20,
+  },
+
 });
