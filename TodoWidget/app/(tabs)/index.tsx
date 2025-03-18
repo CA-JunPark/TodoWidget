@@ -10,11 +10,12 @@ import * as SQLite from 'expo-sqlite';
 import * as todosql from '../../sqlite/todosql';
 import Item, { ItemProps } from "../../components/Item";
 import { useTodoDB } from '../../states/todoDB';
+import { useWorkData } from '../../states/workData';
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
 export default function Index() {
-  const [workData, setWorkData] = useState<ItemProps[]>([]);
+  const { workData, setWorkData, reorderItem, addItem } = useWorkData();
   const { db, setDb } = useTodoDB();
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
@@ -36,7 +37,7 @@ export default function Index() {
 
   const handleReorderWork = async ({from, to}: ReorderableListReorderEvent) => {
     // local
-    setWorkData(value => reorderItems(value, from, to));
+    reorderItem(from, to);
     // sqlite
     await todosql.swapOrderIndices(db, workData[from].id, workData[to].id);
   };
@@ -78,7 +79,7 @@ export default function Index() {
         await todosql.updateOrderIndexById(db, item.id, item.order_index);
       });
     }
-    setWorkData(prev => [newItem, ...prev]);
+    addItem(newItem);
     // add to sqlite
     await todosql.addTodo(db, newItem);
     setInput('');
