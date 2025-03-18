@@ -1,6 +1,6 @@
-import React, { memo, useRef, useState } from "react";
-import { View, StyleSheet, Pressable, NativeModules, Animated } from "react-native";
-import { MD3DarkTheme, Card, Checkbox, Text } from 'react-native-paper';
+import React, { memo, useState } from "react";
+import { StyleSheet, NativeModules, Animated } from "react-native";
+import { MD3DarkTheme, Card } from 'react-native-paper';
 import AnimatedPressable from './AnimatedPressable';
 import { useSelectedItem } from '../states/selectedItem';
 import { useReorderableDrag } from 'react-native-reorderable-list';

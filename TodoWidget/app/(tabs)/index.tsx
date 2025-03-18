@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
-import { MD3DarkTheme, FAB, Modal, Portal, Text, IconButton, TextInput } from 'react-native-paper';
+import { MD3DarkTheme, FAB, Modal, Portal, TextInput } from 'react-native-paper';
 import ReorderableList, {
   ReorderableListReorderEvent,
   reorderItems,
