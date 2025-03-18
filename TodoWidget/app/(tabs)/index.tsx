@@ -24,7 +24,7 @@ export default function Index() {
       const db = SQLite.openDatabaseSync('todo.db');
       setDb(db);
       const data = await todosql.getAllTodos(db);
-      setWorkData(data ?? []);
+      setWorkData(data?.filter(item => item.done === 0) ?? []);
     } catch (error) {
       console.error("Error initializing database:", error);
     }
@@ -47,6 +47,7 @@ export default function Index() {
 
   const handleAddTodo = async() => {
     showModal();
+    viewAll();
   };
 
   const showModal = () => setModalVisible(true);

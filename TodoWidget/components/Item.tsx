@@ -27,12 +27,13 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const router = useRouter();
     
     const { setSelectedItem } = useSelectedItem();
-    // TODO sync with sqlite (both)
+    // TODO sync with sqlite and local (both)
     const [checked, setChecked] = useState(item.done === 1);
     const [priority, setPriority] = useState(item.priority ?? '');
     
     const handlePress = () => {
         setSelectedItem(item);
+        console.log("Item pressed:", item.order_index);
         router.push('/(tabs)/editItem');
     };
 

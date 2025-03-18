@@ -15,24 +15,9 @@ import { useTodoDB } from '../../states/todoDB';
 
 export default function Index() {
   const [doneData, setDoneData] = useState<ItemProps[]>([]);
-  const { db, setDb } = useTodoDB();
+  const { db } = useTodoDB();
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
-
-  const initDB = async () => {
-    try {
-      const db = SQLite.openDatabaseSync('todo.db');
-      setDb(db);
-      const data = await todosql.getAllTodos(db);
-      setDoneData(data ?? []);
-    } catch (error) {
-      console.error("Error initializing database:", error);
-    }
-  };
-
-  useEffect(() => {
-    initDB();
-  }, []);
 
   const handleReorderWork = async ({from, to}: ReorderableListReorderEvent) => {
     // local
