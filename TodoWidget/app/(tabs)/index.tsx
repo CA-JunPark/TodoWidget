@@ -48,6 +48,7 @@ export default function Index() {
 
   const handleAddTodo = async() => {
     showModal();
+    //TODO: remove viewAll after debugging
     viewAll();
   };
 
