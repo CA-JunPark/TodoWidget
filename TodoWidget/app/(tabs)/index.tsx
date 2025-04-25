@@ -15,7 +15,7 @@ import { useWorkData } from '../../states/workData';
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
 export default function Index() {
-  const { workData, setWorkData, reorderItem, addItem } = useWorkData();
+  const { workData, doneData, setWorkData, setDoneData, reorderWorkItem, addItem } = useWorkData();
   const { db, setDb } = useTodoDB();
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
@@ -24,22 +24,32 @@ export default function Index() {
     try {
       const db = SQLite.openDatabaseSync('todo.db');
       setDb(db);
+      loadData(db);
+    } catch (error) {
+        console.error("Error initializing database:", error);
+    }
+  };
+
+  const loadData = async (db: SQLite.SQLiteDatabase | null) => {
       const data = await todosql.getAllTodos(db);
       setWorkData(data?.filter(item => item.done === 0) ?? []);
-    } catch (error) {
-      console.error("Error initializing database:", error);
-    }
+      setDoneData(data?.filter(item => item.done === 1) ?? []);
   };
 
   useEffect(() => {
     initDB();
   }, []);
 
+  useEffect(() => {
+    for (let i = 0; i < workData.length; i++) {
+      workData[i].order_index = i;
+      todosql.updateOrderIndexById(db, workData[i].id, i);
+    }
+  }, [workData]);
+
   const handleReorderWork = async ({from, to}: ReorderableListReorderEvent) => {
     // local
-    reorderItem(from, to);
-    // sqlite
-    await todosql.swapOrderIndices(db, workData[from].id, workData[to].id);
+    reorderWorkItem(from, to);
   };
   
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
@@ -48,8 +58,6 @@ export default function Index() {
 
   const handleAddTodo = async() => {
     showModal();
-    //TODO: remove viewAll after debugging
-    viewAll();
   };
 
   const showModal = () => setModalVisible(true);
@@ -95,6 +103,9 @@ export default function Index() {
     }
     console.log("Work data:");
     workData?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+    console.log("Done data:");
+    doneData?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+    console.log("---");
   };
 
   return (

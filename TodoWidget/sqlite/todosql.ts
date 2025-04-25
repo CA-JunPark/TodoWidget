@@ -111,6 +111,15 @@ export const updateTodo = async (db: SQLite.SQLiteDatabase | null, item: ItemPro
     }
 };
 
+export const updateCheckById = async (db: SQLite.SQLiteDatabase | null, id: number, done: number) => {
+    try {
+        // Update the done status of the todo with the given id
+        await db?.runAsync('UPDATE todo SET done = ? WHERE id = ?;', [done, id]);
+    } catch (error) {
+        console.error("Error updating done:", error);
+    }
+};
+
 export const updateOrderIndexById = async (db: SQLite.SQLiteDatabase | null, id: number, order_index: number) => {
     try {
         // Update the order_index of the todo with the given id

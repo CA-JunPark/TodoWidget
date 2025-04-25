@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { StyleSheet, NativeModules, Animated } from "react-native";
 import { MD3DarkTheme, Card } from 'react-native-paper';
 import AnimatedPressable from './AnimatedPressable';
@@ -25,15 +25,15 @@ export interface ItemProps {
 const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     const drag = useReorderableDrag();
     const router = useRouter();
-    
     const { setSelectedItem } = useSelectedItem();
-    // TODO sync with sqlite and local (both)
+    // Set the initial state of the checkbox to the value of done
+    // If done is 1, then the item is checked
+    // If done is 0, then the item is unchecked
     const [checked, setChecked] = useState(item.done === 1);
     const [priority, setPriority] = useState(item.priority ?? '');
     
     const handlePress = () => {
         setSelectedItem(item);
-        console.log("Item pressed:", item.order_index);
         router.push('/(tabs)/editItem');
     };
 
@@ -49,7 +49,7 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
                 style={styles.item}
                 titleStyle={styles.itemText}
                 subtitleStyle={styles.itemSubText}
-                left={props => CustomCheckbox({checked, setChecked})}
+                left={props => CustomCheckbox({checked, setChecked, id: item.id})}
                 right={props => (
                     <PriorityButton priority={priority} setPriority={setPriority} />
                 )}

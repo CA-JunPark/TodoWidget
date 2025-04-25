@@ -77,7 +77,7 @@ export default function EditItem() {
       <ScrollView contentContainerStyle={styles.scrollContainer} >
         <View style={styles.titleContainer}>
             <View style={styles.checkboxContainer}>
-                <CustomCheckbox checked={done} setChecked={setDone} />
+                <CustomCheckbox checked={done} setChecked={setDone} id={selectedItem?.id} />
             </View>
             <PaperInput label="Title" value={title} onChangeText={setTitle} style={styles.titleInput}/>
             <PriorityButton priority={priority} setPriority={setPriority} />

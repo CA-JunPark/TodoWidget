@@ -4,9 +4,7 @@ import { MD3DarkTheme } from 'react-native-paper';
 import { useSelectedItem } from '../../states/selectedItem';
 import { useWorkData } from '../../states/workData';
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
 import { useTodoDB } from '@/states/todoDB';
-import * as SQLite from 'expo-sqlite';
 import * as todosql from '../../sqlite/todosql';
 import { Alert } from 'react-native';
 
@@ -14,22 +12,8 @@ export default function TabLayout() {
   const { selectedItem, setSelectedItem} = useSelectedItem();
   const { deleteItem } = useWorkData();
   const router = useRouter(); 
-  const { db, setDb } = useTodoDB();
+  const { db } = useTodoDB();
 
-  const initDB = async () => {
-    try {
-      const db = SQLite.openDatabaseSync('todo.db');
-      setDb(db);
-    } catch (error) {
-      console.error("Error initializing database:", error);
-    }
-  };
-  
-  useEffect(() => {
-    initDB();
-  }, []);
-
-  
   const onDelete = () => {
     Alert.alert(
       "Delete Item",

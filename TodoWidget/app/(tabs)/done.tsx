@@ -1,31 +1,49 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
 import { MD3DarkTheme, FAB, Modal, Portal, TextInput } from 'react-native-paper';
 import ReorderableList, {
   ReorderableListReorderEvent,
-  reorderItems,
 } from 'react-native-reorderable-list';
-import * as SQLite from 'expo-sqlite';
 import * as todosql from '../../sqlite/todosql';
 import Item, { ItemProps } from "../../components/Item";
 import { useTodoDB } from '../../states/todoDB';
+import { useWorkData } from '../../states/workData';
+import * as SQLite from 'expo-sqlite';
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
 export default function Index() {
-  const [doneData, setDoneData] = useState<ItemProps[]>([]);
+  const { workData, doneData, setWorkData, setDoneData, reorderDoneItem, addItem } = useWorkData();
   const { db } = useTodoDB();
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
 
-  const handleReorderWork = async ({from, to}: ReorderableListReorderEvent) => {
-    // local
-    setDoneData(value => reorderItems(value, from, to));
-    // sqlite
-    await todosql.swapOrderIndices(db, doneData[from].id, doneData[to].id);
+  useEffect(() => {
+    loadData(db);
+  }, []);
+
+  useEffect(() => {
+    for (let i = 0; i < doneData.length; i++) {
+      doneData[i].order_index = i;
+      todosql.updateOrderIndexById(db, doneData[i].id, i);
+    }
+    //TODO: remove viewAll after debugging
+    viewAll();
+  }, [doneData]);
+
+  const loadData = async (db: SQLite.SQLiteDatabase | null) => {
+    if (db) {
+      const data = await todosql.getAllTodos(db);
+      setWorkData(data?.filter(item => item.done === 0) ?? []);
+      setDoneData(data?.filter(item => item.done === 1) ?? []);
+    }
   };
-  
+
+  const handleReorderWork = async ({from, to}: ReorderableListReorderEvent) => {
+    reorderDoneItem(from, to);
+  };
+
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
     <Item item={item} />
   );
@@ -38,45 +56,48 @@ export default function Index() {
   const hideModal = () => setModalVisible(false);
 
   const uploadItem = async() => {
-    hideModal();
-    // trim input
-    const trimmedInput = input.trim();
-    if (!trimmedInput) return;
-    // generate new item
-    const newId = await todosql.generateMaxId(db);
-    const newItem = {
-      id: newId,
-      title: trimmedInput,
-      done: 0,
-      note: '',
-      priority: '',
-      notification: '',
-      due: '',
-      when_created: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      order_index: 0,
+      hideModal();
+      // trim input
+      const trimmedInput = input.trim();
+      if (!trimmedInput) return;
+      // generate new item
+      const newId = await todosql.generateMaxId(db);
+      const newItem = {
+        id: newId,
+        title: trimmedInput,
+        done: 0,
+        note: '',
+        priority: '',
+        notification: '',
+        due: '',
+        when_created: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        order_index: 0,
+      };
+      // add to work data (top)
+      if (db) {
+        workData.forEach(async (item) => {
+          item.order_index += 1;
+          await todosql.updateOrderIndexById(db, item.id, item.order_index);
+        });
+      }
+      addItem(newItem);
+      // add to sqlite
+      await todosql.addTodo(db, newItem);
+      setInput('');
     };
-    // add to done data (top)
-    if (db) {
-      doneData.forEach(async (item) => {
-        item.order_index += 1;
-        await todosql.updateOrderIndexById(db, item.id, item.order_index);
-      });
-    }
-    setDoneData(prev => [newItem, ...prev]);
-    // add to sqlite
-    await todosql.addTodo(db, newItem);
-    setInput('');
-  };
 
   // For debugging
   const viewAll = async() => {
     if (db) {
-      const allItems = await todosql.getAllTodos(db);
-      console.log("SQLite data:");
-      allItems?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
-    }
-    console.log("Done data:");
-    doneData?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+          const allItems = await todosql.getAllTodos(db);
+          console.log("SQLite data:");
+          allItems?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+        }
+        console.log("Work data:");
+        workData?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+        console.log("Done data:");
+        doneData?.forEach(item => console.log(`id: ${item.id}, title: ${item.title}, order_index: ${item.order_index}`));
+        console.log("---");
   };
 
   return (
