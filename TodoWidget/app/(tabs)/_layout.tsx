@@ -1,4 +1,5 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { MD3DarkTheme } from 'react-native-paper';
 import { useSelectedItem } from '../../states/selectedItem';
@@ -36,6 +37,11 @@ export default function TabLayout() {
     router.replace('/(tabs)');
   };
 
+  const onReset = () => {
+    console.log('Reset');
+  };
+
+  
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: 'blue', tabBarHideOnKeyboard: true }}>
       <Tabs.Screen
@@ -69,13 +75,29 @@ export default function TabLayout() {
             // tabBarButton: () => null,
             href: null,
             headerRight: () => (
-              <FontAwesome.Button
-                name="trash-o"
-                size={28}
-                backgroundColor={MD3DarkTheme.colors.primary}
-                color={MD3DarkTheme.colors.background}
-                onPress={() => onDelete()}
-              />
+              <>
+                <FontAwesome.Button
+                  name="trash-o"
+                  size={28}
+                  backgroundColor={MD3DarkTheme.colors.primary}
+                  color={MD3DarkTheme.colors.background}
+                  onPress={() => onDelete()}
+                />
+                {/* <Ionicons.Button
+                  name="reload"
+                  size={28}
+                  backgroundColor={MD3DarkTheme.colors.primary}
+                  color={MD3DarkTheme.colors.background}
+                  onPress={() => onReset()}
+                />
+                <FontAwesome.Button
+                  name="save"
+                  size={28}
+                  backgroundColor={MD3DarkTheme.colors.primary}
+                  color={MD3DarkTheme.colors.background}
+                  onPress={() => console.log('Save')}
+                /> */}
+              </>
             ),
           }}
       />

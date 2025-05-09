@@ -6,8 +6,7 @@ import { useSelectedItem } from '../../states/selectedItem';
 import { CustomCheckbox } from '../../components/customCheckbox';
 import { PriorityButton } from '../../components/Priority';
 import { DatePickerInput } from 'react-native-paper-dates';
-
-//TODO onFocus 
+import { Alert } from 'react-native';
 
 export default function EditItem() {
   const { selectedItem } = useSelectedItem();
@@ -47,31 +46,59 @@ export default function EditItem() {
     }
   }, [selectedItem]);
 
-  //TODO debounce
-  
+  //confirm reset
+  const confirmResetDate = () => {
+    Alert.alert(
+      "Reset Date",
+      "Are you sure you want to reset the due date?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        { text: "OK", onPress: resetDate },
+      ]
+    );
+  };
+
+  const confirmResetNotificationDate = () => {
+    Alert.alert(
+      "Reset Date",
+      "Are you sure you want to reset the notification date?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        { text: "OK", onPress: resetNotificationDate },
+      ]
+    );
+  };
+
+  // change date
   const changeDate = (d: Date | undefined) => {
     setDue(d ? d.toISOString().split('T')[0] : '');
     const newDate = new Date(d?.toISOString() || '')
     setDueDate(newDate);
   }
-
-  const resetDate = () => {
-    // TODO confirm
-    setDue('');
-    setDueDate(undefined);
-  }
+  
   const changeNotificationDate = (d: Date | undefined) => {
     setNotification(d ? d.toISOString().split('T')[0] : '');
     const newDate = new Date(d?.toISOString() || '')
     setNotificationDate(newDate);
   }
 
+  // resets
+  const resetDate = () => {
+    setDue('');
+    setDueDate(undefined);
+  }
+
   const resetNotificationDate = () => {
-    // TODO confirm
     setNotification('');
     setNotificationDate(undefined);
   }
-  // TODO delete button
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer} >
@@ -90,7 +117,7 @@ export default function EditItem() {
             onChange={changeDate}
             inputMode="start"
           />
-          <IconButton icon="close" onPress={resetDate} />
+          <IconButton icon="close" onPress={confirmResetDate} />
         </View>
         <View style={styles.dateContainer}>
           <DatePickerInput
@@ -100,7 +127,7 @@ export default function EditItem() {
             onChange={changeNotificationDate}
             inputMode="start"
           />
-          <IconButton icon="close" onPress={resetNotificationDate} />
+          <IconButton icon="close" onPress={confirmResetNotificationDate} />
         </View>
         <View style={styles.noteContainer}>
           <PaperInput label="Note" value={note} onChangeText={setNote} multiline={true} numberOfLines={5} style={styles.noteInput}/>

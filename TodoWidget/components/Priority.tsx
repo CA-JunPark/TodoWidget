@@ -36,7 +36,7 @@ export const PriorityButton = ({ priority, setPriority }: PriorityProps) => {
     // Animate the button scale
     Animated.sequence([
       Animated.timing(animatedScale, {
-        toValue: 1.2,
+        toValue: 0.9,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -64,8 +64,8 @@ export const PriorityButton = ({ priority, setPriority }: PriorityProps) => {
 const styles = StyleSheet.create({
     priorityButton: {
         borderRadius: 50,
-        width: 40,
-        height: 40,
+        width: 45,
+        height: 45,
         justifyContent: 'center',
         alignItems: 'center',
     },
