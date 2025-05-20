@@ -9,13 +9,17 @@ import { useTodoDB } from '@/states/todoDB';
 import * as todosql from '../../sqlite/todosql';
 import { Alert } from 'react-native';
 import { useEditedItem } from '../../states/editedItem';
+import { ItemProps } from '@/components/Item';
+import { useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function TabLayout() {
+  const [isUpdating, setIsUpdating] = useState(false);
   const { selectedItem, setSelectedItem} = useSelectedItem();
   const { deleteItem } = useWorkData();
   const router = useRouter(); 
   const { db } = useTodoDB();
-  const { setEditedItem } = useEditedItem();
+  const { done, title, due, note, priority, notification, setEditedItem } = useEditedItem();
 
   const onDelete = () => {
     Alert.alert(
@@ -31,8 +35,37 @@ export default function TabLayout() {
     );
   };
 
-  const onSave = () => {
-    console.log('Save');
+  const onSave = async () => {
+    if (!selectedItem?.id) return;
+    setIsUpdating(true);
+    try {
+      const editedItem: ItemProps = {
+        id: selectedItem?.id ?? 0,
+        done: done ? 1 : 0,
+        title: title ?? '',
+        due: due ?? '',
+        note: note ?? '',
+        priority: priority ?? '',
+        notification: notification ?? '',
+        when_created: selectedItem?.when_created ?? '',
+        order_index: selectedItem?.order_index ?? 0,
+      };
+      await todosql.updateTodo(db, editedItem);
+      setSelectedItem(editedItem);
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        `Error updating todo: ${error}`,
+        [
+          {
+            text: "OK",
+            style: "cancel",
+          },
+        ]
+      );
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const deleteCurrentItem = () => {
@@ -56,6 +89,25 @@ export default function TabLayout() {
       priority: selectedItem?.priority,
     });
   };
+
+  if (isUpdating) {
+    return (
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1000
+      }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: 'blue', tabBarHideOnKeyboard: true }}>
