@@ -8,12 +8,14 @@ import { useRouter } from 'expo-router';
 import { useTodoDB } from '@/states/todoDB';
 import * as todosql from '../../sqlite/todosql';
 import { Alert } from 'react-native';
+import { useEditedItem } from '../../states/editedItem';
 
 export default function TabLayout() {
   const { selectedItem, setSelectedItem} = useSelectedItem();
   const { deleteItem } = useWorkData();
   const router = useRouter(); 
   const { db } = useTodoDB();
+  const { setEditedItem } = useEditedItem();
 
   const onDelete = () => {
     Alert.alert(
@@ -29,6 +31,10 @@ export default function TabLayout() {
     );
   };
 
+  const onSave = () => {
+    console.log('Save');
+  };
+
   const deleteCurrentItem = () => {
     if (!selectedItem?.id) return;
     deleteItem(selectedItem.id);
@@ -39,9 +45,18 @@ export default function TabLayout() {
 
   const onReset = () => {
     console.log('Reset');
+    setEditedItem({
+      done: selectedItem?.done === 1,
+      title: selectedItem?.title,
+      due: selectedItem?.due,
+      dueDate: selectedItem?.due ? new Date(selectedItem.due) : undefined,
+      note: selectedItem?.note,
+      notification: selectedItem?.notification,
+      notificationDate: selectedItem?.notification ? new Date(selectedItem.notification) : undefined,
+      priority: selectedItem?.priority,
+    });
   };
 
-  
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: 'blue', tabBarHideOnKeyboard: true }}>
       <Tabs.Screen
@@ -83,7 +98,7 @@ export default function TabLayout() {
                   color={MD3DarkTheme.colors.background}
                   onPress={() => onDelete()}
                 />
-                {/* <Ionicons.Button
+                <Ionicons.Button
                   name="reload"
                   size={28}
                   backgroundColor={MD3DarkTheme.colors.primary}
@@ -95,8 +110,8 @@ export default function TabLayout() {
                   size={28}
                   backgroundColor={MD3DarkTheme.colors.primary}
                   color={MD3DarkTheme.colors.background}
-                  onPress={() => console.log('Save')}
-                /> */}
+                  onPress={() => onSave()}
+                />
               </>
             ),
           }}

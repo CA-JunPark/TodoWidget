@@ -1,5 +1,5 @@
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { MD3DarkTheme, Text, IconButton } from 'react-native-paper';
 import { PaperInput } from '../../components/PaperInput';
 import { useSelectedItem } from '../../states/selectedItem';
@@ -7,114 +7,111 @@ import { CustomCheckbox } from '../../components/customCheckbox';
 import { PriorityButton } from '../../components/Priority';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Alert } from 'react-native';
+import { useEditedItem } from '../../states/editedItem';
 
 export default function EditItem() {
   const { selectedItem } = useSelectedItem();
-  const [done, setDone] = useState(selectedItem?.done === 1);
-  const [title, setTitle] = useState(selectedItem?.title || '');
-  const [due, setDue] = useState<string>("");
-  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
-  const [note, setNote] = useState(selectedItem?.note || '');
-  const [notification, setNotification] = useState(selectedItem?.notification || '');
-  const [notificationDate, setNotificationDate] = useState<Date | undefined>(undefined);
-  const [priority, setPriority] = useState(selectedItem?.priority || '');
+  const { 
+    done, 
+    title, 
+    due, 
+    note, 
+    notification, 
+    priority, 
+    setEditedDone,
+    setEditedTitle,
+    setEditedDue,
+    setEditedDueDate,
+    setEditedNote,
+    setEditedNotification,
+    setEditedNotificationDate,
+    setEditedPriority,
+    setEditedItem,
+  } = useEditedItem();
 
+  // Memoize the parsed dates to prevent unnecessary re-renders
+  const { dueDate: parsedDueDate, notificationDate: parsedNotificationDate } = useMemo(() => ({
+    dueDate: due ? new Date(due) : undefined,
+    notificationDate: notification ? new Date(notification) : undefined,
+  }), [due, notification]);
+
+  // Update state when selectedItem changes
   useEffect(() => {
-    if (selectedItem) {
-      setDone(selectedItem.done === 1);
-      setTitle(selectedItem.title || '');
-      setNote(selectedItem.note || '');
-      setDue(selectedItem.due || '');
-      // setDueDate(undefined) if due is empty string
-      // otherwise, convert due string to Date object and setDueDate
-      if (selectedItem.due === '') {
-        setDueDate(undefined);
-      } else {
-        const newDueDate = new Date(selectedItem.due || '')
-        setDueDate(newDueDate);
-      }
-      // if notification is empty string, set notificationDate to undefined
-      // otherwise, convert notification string to Date object and setNotificationDate
-      setNotification(selectedItem.notification || '');
-      if (selectedItem.notification === '') {
-        setNotificationDate(undefined);
-      } else {
-        const newNotificationDate = new Date(selectedItem.notification || '')
-        setNotificationDate(newNotificationDate);
-      }
-      setPriority(selectedItem.priority || '');
-    }
+    if (!selectedItem) return;
+    setEditedItem({
+      done: selectedItem.done === 1,
+      title: selectedItem.title || '',
+      due: selectedItem.due || '',
+      note: selectedItem.note || '',
+      notification: selectedItem.notification || '',
+      priority: selectedItem.priority || '',
+      dueDate: selectedItem.due ? new Date(selectedItem.due) : undefined,
+      notificationDate: selectedItem.notification ? new Date(selectedItem.notification) : undefined,
+    });
   }, [selectedItem]);
 
-  //confirm reset
-  const confirmResetDate = () => {
+  // Memoize handlers with useCallback
+  const handleDateChange = useCallback((date: Date | undefined) => {
+    const dateString = date ? date.toISOString().split('T')[0] : '';
+    setEditedDue(dateString);
+    setEditedDueDate(date);
+  }, [setEditedDue, setEditedDueDate]);
+  
+  const handleNotificationDateChange = useCallback((date: Date | undefined) => {
+    const dateString = date ? date.toISOString().split('T')[0] : '';
+    setEditedNotification(dateString);
+    setEditedNotificationDate(date);
+  }, [setEditedNotification, setEditedNotificationDate]);
+  
+  const resetDate = useCallback(() => {
+    setEditedDue('');
+    setEditedDueDate(undefined);
+  }, [setEditedDue, setEditedDueDate]);
+  
+  const resetNotificationDate = useCallback(() => {
+    setEditedNotification('');
+    setEditedNotificationDate(undefined);
+  }, [setEditedNotification, setEditedNotificationDate]);
+
+  // Memoize alert dialogs
+  const confirmResetDate = useCallback(() => {
     Alert.alert(
       "Reset Date",
       "Are you sure you want to reset the due date?",
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         { text: "OK", onPress: resetDate },
       ]
     );
-  };
+  }, [resetDate]);
 
-  const confirmResetNotificationDate = () => {
+  const confirmResetNotificationDate = useCallback(() => {
     Alert.alert(
-      "Reset Date",
+      "Reset Notification",
       "Are you sure you want to reset the notification date?",
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         { text: "OK", onPress: resetNotificationDate },
       ]
     );
-  };
-
-  // change date
-  const changeDate = (d: Date | undefined) => {
-    setDue(d ? d.toISOString().split('T')[0] : '');
-    const newDate = new Date(d?.toISOString() || '')
-    setDueDate(newDate);
-  }
-  
-  const changeNotificationDate = (d: Date | undefined) => {
-    setNotification(d ? d.toISOString().split('T')[0] : '');
-    const newDate = new Date(d?.toISOString() || '')
-    setNotificationDate(newDate);
-  }
-
-  // resets
-  const resetDate = () => {
-    setDue('');
-    setDueDate(undefined);
-  }
-
-  const resetNotificationDate = () => {
-    setNotification('');
-    setNotificationDate(undefined);
-  }
+  }, [resetNotificationDate]);
 
   return (
     <KeyboardAvoidingView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer} >
         <View style={styles.titleContainer}>
             <View style={styles.checkboxContainer}>
-                <CustomCheckbox checked={done} setChecked={setDone} id={selectedItem?.id} />
+                <CustomCheckbox checked={done} setChecked={(checked) => setEditedDone(checked)} id={selectedItem?.id} />
             </View>
-            <PaperInput label="Title" value={title} onChangeText={setTitle} style={styles.titleInput}/>
-            <PriorityButton priority={priority} setPriority={setPriority} />
+            <PaperInput label="Title" value={title} onChangeText={(text) => setEditedTitle(text)} style={styles.titleInput}/>
+            <PriorityButton priority={priority} setPriority={(priority) => setEditedPriority(priority)} />
         </View>
         <View style={styles.dateContainer}>
           <DatePickerInput
             locale={'en'}
             label="Due Date"
-            value={dueDate}
-            onChange={changeDate}
+            value={parsedDueDate}
+            onChange={handleDateChange}
             inputMode="start"
           />
           <IconButton icon="close" onPress={confirmResetDate} />
@@ -123,14 +120,14 @@ export default function EditItem() {
           <DatePickerInput
             locale={'en'}
             label="Notification Date"
-            value={notificationDate}
-            onChange={changeNotificationDate}
+            value={parsedNotificationDate}
+            onChange={handleNotificationDateChange}
             inputMode="start"
           />
           <IconButton icon="close" onPress={confirmResetNotificationDate} />
         </View>
         <View style={styles.noteContainer}>
-          <PaperInput label="Note" value={note} onChangeText={setNote} multiline={true} numberOfLines={5} style={styles.noteInput}/>
+          <PaperInput label="Note" value={note} onChangeText={(text) => setEditedNote(text)} multiline={true} numberOfLines={5} style={styles.noteInput}/>
         </View>
       </ScrollView>
       <View style={styles.createdTextContainer}>
