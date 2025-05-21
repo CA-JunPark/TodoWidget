@@ -1,16 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, ListRenderItemInfo } from "react-native";
 import { NativeModules } from 'react-native';
 import { MD3DarkTheme, FAB, Modal, Portal, TextInput } from 'react-native-paper';
 import ReorderableList, {
   ReorderableListReorderEvent,
-  reorderItems,
 } from 'react-native-reorderable-list';
 import * as SQLite from 'expo-sqlite';
 import * as todosql from '../../sqlite/todosql';
 import Item, { ItemProps } from "../../components/Item";
 import { useTodoDB } from '../../states/todoDB';
 import { useWorkData } from '../../states/workData';
+import { useFocusEffect } from 'expo-router';
+import { useSelectedItem } from '../../states/selectedItem';
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
@@ -19,6 +20,7 @@ export default function Index() {
   const { db, setDb } = useTodoDB();
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
+  const {clearSelectedItem} = useSelectedItem();
 
   const initDB = async () => {
     try {
@@ -36,9 +38,12 @@ export default function Index() {
       setDoneData(data?.filter(item => item.done === 1) ?? []);
   };
 
-  useEffect(() => {
-    initDB();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      clearSelectedItem();
+      initDB();
+    }, [])
+  );
 
   useEffect(() => {
     for (let i = 0; i < workData.length; i++) {
