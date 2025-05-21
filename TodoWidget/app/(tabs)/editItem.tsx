@@ -104,7 +104,7 @@ export default function EditItem() {
                 <CustomCheckbox checked={done} setChecked={(checked) => setEditedDone(checked)} id={selectedItem?.id} />
             </View>
             <PaperInput label="Title" value={title} onChangeText={(text) => setEditedTitle(text)} style={styles.titleInput}/>
-            <PriorityButton priority={priority} setPriority={(priority) => setEditedPriority(priority)} />
+            <PriorityButton priority={priority} setPriority={(priority) => setEditedPriority(priority)} id={selectedItem?.id} />
         </View>
         <View style={styles.dateContainer}>
           <DatePickerInput

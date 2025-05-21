@@ -38,11 +38,17 @@ export default function Index() {
       setDoneData(data?.filter(item => item.done === 1) ?? []);
   };
 
+  useEffect(() => {
+    initDB();
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       clearSelectedItem();
-      initDB();
-    }, [])
+      if (db) {
+        loadData(db);
+      }
+    }, [db])
   );
 
   useEffect(() => {
@@ -58,7 +64,7 @@ export default function Index() {
   };
   
   const renderItem = ({item}: ListRenderItemInfo<ItemProps>) => (
-    <Item item={item} />
+    <Item key={`${item.id}-${item.done}-${item.priority}`} item={item} />
   );
 
   const handleAddTodo = async() => {

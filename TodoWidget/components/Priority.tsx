@@ -12,7 +12,7 @@ import { useTodoDB } from '../states/todoDB';
 interface PriorityProps {
   priority: string;
   setPriority: (newPriority: string) => void;
-  id: number;
+  id: number | undefined;
 }
 
 export const PriorityButton = ({ priority, setPriority, id }: PriorityProps) => {
@@ -59,7 +59,7 @@ export const PriorityButton = ({ priority, setPriority, id }: PriorityProps) => 
   };
 
   const updatePrioritySQL = async (nextIndex: number) => {
-    await updatePriorityById(db, id, priorityOptions[nextIndex]).then(() => {
+    await updatePriorityById(db, id!, priorityOptions[nextIndex]).then(() => {
       console.log('Priority updated successfully');
     }).catch((error) => {
       console.error('Error updating priority:', error);

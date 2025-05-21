@@ -40,7 +40,7 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
     useEffect(() => {
         item.priority = priority;
     }, [priority]);
-
+    
     return (
         <AnimatedPressable 
             onPress={() => handlePress()}
