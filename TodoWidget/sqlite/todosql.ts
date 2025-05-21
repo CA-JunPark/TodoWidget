@@ -111,6 +111,15 @@ export const updateTodo = async (db: SQLite.SQLiteDatabase | null, item: ItemPro
     }
 };
 
+export const updatePriorityById = async (db: SQLite.SQLiteDatabase | null, id: number, priority: string) => {
+    try {
+        // Update the priority of the todo with the given id
+        await db?.runAsync('UPDATE todo SET priority = ? WHERE id = ?;', [priority, id]);
+    } catch (error) {
+        console.error("Error updating priority:", error);
+    }
+};
+
 export const updateCheckById = async (db: SQLite.SQLiteDatabase | null, id: number, done: number) => {
     try {
         // Update the done status of the todo with the given id

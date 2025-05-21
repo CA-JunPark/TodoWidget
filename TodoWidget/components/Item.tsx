@@ -37,6 +37,10 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
         router.push('/(tabs)/editItem');
     };
 
+    useEffect(() => {
+        item.priority = priority;
+    }, [priority]);
+
     return (
         <AnimatedPressable 
             onPress={() => handlePress()}
@@ -51,7 +55,7 @@ const Item: React.FC<{item: ItemProps}> = memo(({item}) => {
                 subtitleStyle={styles.itemSubText}
                 left={props => CustomCheckbox({checked, setChecked, id: item.id})}
                 right={props => (
-                    <PriorityButton priority={priority} setPriority={setPriority} />
+                    <PriorityButton priority={priority} setPriority={setPriority} id={item.id}/>
                 )}
                 rightStyle={styles.itemRight}
             />
