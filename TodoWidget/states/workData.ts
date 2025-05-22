@@ -62,5 +62,3 @@ export const useWorkData = create<WorkDataState>((set) => ({
     }
   },
 }));
-
-//TODO Edit order_index when Done or UnDone

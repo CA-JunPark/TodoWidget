@@ -4,29 +4,6 @@ import { ItemProps } from '../components/Item';
 // import { NativeModules } from 'react-native';
 // const { WidgetModule } = NativeModules;
 
-// examples 
-// // add
-// const exampleItem = { id: 999, done: 0, title: 'Example Item', note: '', priority: '', notification: '', due: '2021-12-30', when_created: '', order_index: 0 };
-// await todosql.addTodo(db, exampleItem);
-// // get all
-// const allItems = await todosql.getAllTodos(db);
-// // console.log("All items:", allItems);
-// // get one
-// const item999 = await todosql.getTodoById(db, 999);
-// console.log("Item 999:", item999);
-// // update
-// const updatedItem = { id: 999, done: 1, title: 'Updated Item', note: null, priority: null, notification: null, due: null, when_created: null, order_index: null };
-// await todosql.updateTodo(db, updatedItem);
-// const item9992 = await todosql.getTodoById(db, 999);
-// console.log("Item 999:", item9992);
-// // delete all
-// await todosql.deleteAll(db);
-// // Count all todos
-// const count = await todosql.countAll(db);
-// setResultCount(count);
-// // Close database
-// todosql.close(db);
-
 export const createTableIfNotExists = async (db: SQLite.SQLiteDatabase | null) => {
     try {
         await db?.execAsync(`CREATE TABLE IF NOT EXISTS todo (

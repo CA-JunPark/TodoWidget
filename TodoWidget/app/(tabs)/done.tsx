@@ -28,8 +28,7 @@ export default function Index() {
       doneData[i].order_index = i;
       todosql.updateOrderIndexById(db, doneData[i].id, i);
     }
-    //TODO: remove viewAll after debugging
-    viewAll();
+    // viewAll();
   }, [doneData]);
 
   const loadData = async (db: SQLite.SQLiteDatabase | null) => {

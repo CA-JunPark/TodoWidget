@@ -8,6 +8,7 @@ import { PriorityButton } from '../../components/Priority';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Alert } from 'react-native';
 import { useEditedItem } from '../../states/editedItem';
+import { scheduleTodoNotification, cancelTodoNotification } from '../../services/notifications';
 
 export default function EditItem() {
   const { selectedItem } = useSelectedItem();
@@ -61,6 +62,7 @@ export default function EditItem() {
     const dateString = date ? date.toISOString().split('T')[0] : '';
     setEditedNotification(dateString);
     setEditedNotificationDate(date);
+    scheduleTodoNotification(selectedItem?.id, title, note, date);
   }, [setEditedNotification, setEditedNotificationDate]);
   
   const resetDate = useCallback(() => {
@@ -71,6 +73,7 @@ export default function EditItem() {
   const resetNotificationDate = useCallback(() => {
     setEditedNotification('');
     setEditedNotificationDate(undefined);
+    cancelTodoNotification(selectedItem?.id);
   }, [setEditedNotification, setEditedNotificationDate]);
 
   // Memoize alert dialogs

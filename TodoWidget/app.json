@@ -35,7 +35,16 @@
         }
       ],
       "expo-sqlite",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "sounds": [],
+          "mode": "production"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
