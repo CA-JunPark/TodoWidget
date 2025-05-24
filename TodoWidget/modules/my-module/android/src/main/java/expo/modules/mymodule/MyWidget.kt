@@ -51,17 +51,4 @@ class MyWidget : GlanceAppWidget() {
             }
         }
     }
-
-
-    override fun onCompositionError(
-        context: Context,
-        glanceId: GlanceId,
-        appWidgetId: Int,
-        throwable: Throwable
-    ) {
-        super.onCompositionError(context, glanceId, appWidgetId, throwable)
-        val remoteView = RemoteViews(context.packageName, R.layout.custom_error_layout)
-        remoteView.setTextViewText(R.id.textView, "Error")
-        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, remoteView)
-    }
 }
