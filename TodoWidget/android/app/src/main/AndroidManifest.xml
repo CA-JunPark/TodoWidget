@@ -15,7 +15,7 @@
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
-    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="portrait">
+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|locale|layoutDirection" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
@@ -28,26 +28,5 @@
         <data android:scheme="com.junpark5786.todowidget"/>
       </intent-filter>
     </activity>
-    <receiver
-      android:name=".widget.MyWidgetProvider"
-      android:exported="true"
-      android:label="My React Native Widget">
-      <intent-filter>
-          <!-- Required for widget updates -->
-          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-          <!-- Optional: custom action to trigger updates -->
-          <action android:name="com.yourcompany.yourapp.ACTION_UPDATE_WIDGET" />
-      </intent-filter>
-      <meta-data
-          android:name="android.appwidget.provider"
-          android:resource="@xml/my_widget_info" />
-    </receiver>
-
-      <!-- If your widget uses a collection (ListView), you might need a service.
-          Example registration of a RemoteViews service:
-      <service
-          android:name="com.reactnative.yourapp.YourWidgetService"
-          android:permission="android.permission.BIND_REMOTEVIEWS" />
-      -->
   </application>
 </manifest>
