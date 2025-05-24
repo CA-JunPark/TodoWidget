@@ -13,7 +13,6 @@ export const createTableIfNotExists = async (db: SQLite.SQLiteDatabase | null) =
             done INTEGER DEFAULT 0,
             priority TEXT DEFAULT "",
             note TEXT DEFAULT "",
-            notification TEXT DEFAULT "",
             order_index INTEGER DEFAULT 0,
             when_created TEXT DEFAULT ""
         );`);
@@ -44,9 +43,9 @@ export const addTodo = async (db: SQLite.SQLiteDatabase | null, item: ItemProps)
 
         // Insert a new todo into the database.
         // The datetime('now') function is used to set the current date and time in the when_created column.
-        await db?.runAsync('INSERT INTO todo (id, title, due, note, priority, notification, done, order_index, when_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'));',
-            [item.id, item.title, item.due, item.note, item.priority, item.notification, item.done, item.order_index]);
-    } catch (error) {
+        await db?.runAsync('INSERT INTO todo (id, title, due, note, priority, done, order_index, when_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'));',
+            [item.id, item.title, item.due, item.note, item.priority, item.done, item.order_index]);
+    } catch (error: any) {
         console.error("Error adding todo:", error);
     }
 };

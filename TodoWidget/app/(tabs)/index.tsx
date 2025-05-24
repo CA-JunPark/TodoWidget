@@ -12,8 +12,6 @@ import { useTodoDB } from '../../states/todoDB';
 import { useWorkData } from '../../states/workData';
 import { useFocusEffect } from 'expo-router';
 import { useSelectedItem } from '../../states/selectedItem';
-import { initializeNotifications, scheduleNotification, cancelScheduledNotification } from '../../services/notifications';
-import * as Notifications from 'expo-notifications';
 // const { WidgetModule } = NativeModules;
 // <Button title="Update Widget" onPress={() => WidgetModule.updateWidget("New Text")} />
 
@@ -23,35 +21,9 @@ export default function Index() {
   const [modalVisible, setModalVisible] = useState(false);
   const [input, setInput] = useState('');
   const {clearSelectedItem} = useSelectedItem();
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
 
-  // Initialize notifications
   useEffect(() => {
     initDB();
-
-    initializeNotifications();
-
-    // Handle notifications received while the app is in the foreground
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification received:', notification);
-    });
-
-    // Handle user interaction with the notification
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response received:', response);
-      // You can handle notification tap actions here
-    });
-
-    return () => {
-      // Clean up listeners
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      }
-      if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
-      }
-    };
   }, []);
 
   const initDB = async () => {
@@ -115,7 +87,6 @@ export default function Index() {
       done: 0,
       note: '',
       priority: '',
-      notification: '',
       due: '',
       when_created: new Date().toISOString().slice(0, 19).replace('T', ' '),
       order_index: 0,

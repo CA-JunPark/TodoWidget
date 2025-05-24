@@ -16,7 +16,6 @@ export interface ItemProps {
     title: string;
     note: string;
     priority: string;
-    notification: string;
     due: string;
     when_created: string;
     order_index: number;

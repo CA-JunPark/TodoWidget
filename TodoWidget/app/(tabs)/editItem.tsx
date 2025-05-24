@@ -8,7 +8,6 @@ import { PriorityButton } from '../../components/Priority';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Alert } from 'react-native';
 import { useEditedItem } from '../../states/editedItem';
-import { scheduleTodoNotification, cancelTodoNotification } from '../../services/notifications';
 
 export default function EditItem() {
   const { selectedItem } = useSelectedItem();
@@ -17,24 +16,20 @@ export default function EditItem() {
     title, 
     due, 
     note, 
-    notification, 
     priority, 
     setEditedDone,
     setEditedTitle,
     setEditedDue,
     setEditedDueDate,
     setEditedNote,
-    setEditedNotification,
-    setEditedNotificationDate,
     setEditedPriority,
     setEditedItem,
   } = useEditedItem();
 
   // Memoize the parsed dates to prevent unnecessary re-renders
-  const { dueDate: parsedDueDate, notificationDate: parsedNotificationDate } = useMemo(() => ({
+  const { dueDate: parsedDueDate, } = useMemo(() => ({
     dueDate: due ? new Date(due) : undefined,
-    notificationDate: notification ? new Date(notification) : undefined,
-  }), [due, notification]);
+  }), [due]);
 
   // Update state when selectedItem changes
   useEffect(() => {
@@ -44,10 +39,8 @@ export default function EditItem() {
       title: selectedItem.title || '',
       due: selectedItem.due || '',
       note: selectedItem.note || '',
-      notification: selectedItem.notification || '',
       priority: selectedItem.priority || '',
       dueDate: selectedItem.due ? new Date(selectedItem.due) : undefined,
-      notificationDate: selectedItem.notification ? new Date(selectedItem.notification) : undefined,
     });
   }, [selectedItem]);
 
@@ -58,23 +51,10 @@ export default function EditItem() {
     setEditedDueDate(date);
   }, [setEditedDue, setEditedDueDate]);
   
-  const handleNotificationDateChange = useCallback((date: Date | undefined) => {
-    const dateString = date ? date.toISOString().split('T')[0] : '';
-    setEditedNotification(dateString);
-    setEditedNotificationDate(date);
-    scheduleTodoNotification(selectedItem?.id, title, note, date);
-  }, [setEditedNotification, setEditedNotificationDate]);
-  
   const resetDate = useCallback(() => {
     setEditedDue('');
     setEditedDueDate(undefined);
   }, [setEditedDue, setEditedDueDate]);
-  
-  const resetNotificationDate = useCallback(() => {
-    setEditedNotification('');
-    setEditedNotificationDate(undefined);
-    cancelTodoNotification(selectedItem?.id);
-  }, [setEditedNotification, setEditedNotificationDate]);
 
   // Memoize alert dialogs
   const confirmResetDate = useCallback(() => {
@@ -87,17 +67,6 @@ export default function EditItem() {
       ]
     );
   }, [resetDate]);
-
-  const confirmResetNotificationDate = useCallback(() => {
-    Alert.alert(
-      "Reset Notification",
-      "Are you sure you want to reset the notification date?",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "OK", onPress: resetNotificationDate },
-      ]
-    );
-  }, [resetNotificationDate]);
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -118,16 +87,6 @@ export default function EditItem() {
             inputMode="start"
           />
           <IconButton icon="close" onPress={confirmResetDate} />
-        </View>
-        <View style={styles.dateContainer}>
-          <DatePickerInput
-            locale={'en'}
-            label="Notification Date"
-            value={parsedNotificationDate}
-            onChange={handleNotificationDateChange}
-            inputMode="start"
-          />
-          <IconButton icon="close" onPress={confirmResetNotificationDate} />
         </View>
         <View style={styles.noteContainer}>
           <PaperInput label="Note" value={note} onChangeText={(text) => setEditedNote(text)} multiline={true} numberOfLines={5} style={styles.noteInput}/>
