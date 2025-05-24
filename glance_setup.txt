@@ -1,0 +1,323 @@
+Edited from https://www.youtube.com/watch?v=2u4oTUKqD9E 
+
+create module folder
+   npx create-expo-module@latest --local
+
+Add this to your android/app/build.gradle file:
+   dependencies {
+      // For AppWidgets support
+      implementation "androidx.glance:glance-appwidget:1.1.1"
+
+      // For interop APIs with Material 3
+      implementation "androidx.glance:glance-material3:1.1.1"
+   }
+
+check if you have this line in your android/build.gradle file:
+   kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.25'
+
+Edit AndroidManifest.xml in modle/my-module/android/src/main/AndroidManifest.xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+      <application>
+         <receiver
+               android:name="expo.modules.mymodule.MyAppWidgetReceiver"
+               android:exported="true">
+               <intent-filter>
+                  <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+               </intent-filter>
+               <meta-data
+                  android:name="android.appwidget.provider"
+                  android:resource="@xml/widget_info" />
+         </receiver>
+      </application>
+   </manifest>
+
+create folders
+   mkdir modules/my-module/android/src/main/res/xml
+   mkdir modules/my-module/android/src/main/res/xml-v28
+   mkdir modules/my-module/android/src/main/res/xml-v31
+
+create a file on each folder above (mush have same name in meta-data android:resource in AndroidManifest.xml)
+   modules/my-module/android/src/main/res/xml/widget_info.xml
+   modules/my-module/android/src/main/res/xml-v28/widget_info.xml
+   modules/my-module/android/src/main/res/xml-v31/widget_info.xml
+
+edit .../xml/widget_info.xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+      android:resizeMode="horizontal|vertical"
+      android:updatePeriodMillis="3600000"
+      android:minWidth="400dp"
+      android:minHeight="400dp"
+      android:minResizeWidth="400dp"
+      android:minResizeHeight="400dp"
+      android:initialLayout="@layout/glance_default_loading_layout">
+   </appwidget-provider>
+
+edit .../xml-v28/widget_info.xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+      android:resizeMode="horizontal|vertical"
+      android:updatePeriodMillis="3600000"
+      android:minWidth="400dp"
+      android:minHeight="400dp"
+      android:minResizeWidth="400dp"
+      android:minResizeHeight="400dp"
+      android:widgetFeatures="configuration_optional|reconfigurable"
+      android:initialLayout="@layout/glance_default_loading_layout">
+   </appwidget-provider>
+
+edit .../xml-v31/widget_info.xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+      android:resizeMode="horizontal|vertical"
+      android:updatePeriodMillis="3600000"
+      android:minWidth="400dp"
+      android:minHeight="400dp"
+      android:minResizeWidth="400dp"
+      android:minResizeHeight="400dp"
+      android:widgetFeatures="configuration_optional|reconfigurable"
+      android:maxResizeWidth="400dp"
+      android:maxResizeHeight="400dp"
+      android:targetCellWidth="1"
+      android:targetCellHeight="1"
+      android:initialLayout="@layout/glance_default_loading_layout">
+   </appwidget-provider>
+
+create modules/my-module/android/src/main/res/layout
+
+create modules/my-module/android/src/main/res/layout/custom_error_layout.xml
+   <?xml version="1.0" encoding="utf-8"?>
+   <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+      <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:id="@+id/textView"
+         android:text="Error"
+         android:textSize="30sp"
+         android:textColor="@android:color/black"
+         />
+   </LinearLayout>
+
+create modules/my-module/android/src/main/java/expo/modules/mymodule/MyAppWidgetReceiver.kt
+   package expo.modules.mymodule
+
+   import android.content.Context
+   import androidx.glance.appwidget.GlanceAppWidget
+   import androidx.glance.appwidget.GlanceAppWidgetReceiver
+
+   class MyAppWidgetReceiver : GlanceAppWidgetReceiver() {
+      override val glanceAppWidget: GlanceAppWidget = MyWidget()
+      
+      override fun onUpdate(context: Context, appWidgetManager: android.appwidget.AppWidgetManager, appWidgetIds: IntArray) {
+         super.onUpdate(context, appWidgetManager, appWidgetIds)
+      }
+   }
+
+
+create modules/my-module/android/src/main/java/expo/modules/mymodule/MyWidget.kt
+   package expo.modules.mymodule
+
+   import android.appwidget.AppWidgetManager
+   import android.content.Context
+   import android.widget.RemoteViews
+   import androidx.compose.ui.graphics.Color
+   import androidx.compose.ui.unit.dp
+   import androidx.compose.ui.unit.sp
+   import androidx.glance.GlanceId
+   import androidx.glance.GlanceModifier
+   import androidx.glance.GlanceTheme
+   import androidx.glance.LocalSize
+   import androidx.glance.action.actionStartActivity
+   import androidx.glance.action.clickable
+   import androidx.glance.appwidget.GlanceAppWidget
+   import androidx.glance.appwidget.SizeMode
+   import androidx.glance.appwidget.provideContent
+   import androidx.glance.background
+   import androidx.glance.layout.Box
+   import androidx.glance.layout.padding
+   import androidx.glance.text.FontWeight
+   import androidx.glance.text.Text
+   import androidx.glance.text.TextStyle
+   import androidx.glance.unit.ColorProvider
+
+   class MyWidget : GlanceAppWidget() {
+      // errorUiLayout = R.layout.custom_error_layout
+      
+      override val sizeMode: SizeMode = SizeMode.Exact
+
+      override suspend fun provideGlance(context: Context, id: GlanceId) {
+         provideContent {
+               GlanceTheme {
+                  val size = LocalSize.current
+                  Box(
+                     modifier = GlanceModifier
+                           .background(color = Color.Red)
+                           .padding(30.dp)
+                  ) {
+                     Text(
+                           text = "Hello Widgets ${size.width}",
+                           style = TextStyle(
+                              color = ColorProvider(
+                                 Color(0xFF000000)
+                              ),
+                              fontSize = 12.sp,
+                              fontWeight = FontWeight.Medium
+                           )
+                     )
+                  }
+               }
+         }
+      }
+
+
+      override fun onCompositionError(
+         context: Context,
+         glanceId: GlanceId,
+         appWidgetId: Int,
+         throwable: Throwable
+      ) {
+         super.onCompositionError(context, glanceId, appWidgetId, throwable)
+         val remoteView = RemoteViews(context.packageName, R.layout.custom_error_layout)
+         remoteView.setTextViewText(R.id.textView, "Error")
+         AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, remoteView)
+      }
+   }
+
+edit modules/my-module/src/MyModule.ts
+   import { NativeModule, requireNativeModule } from 'expo';
+
+   import { MyModuleEvents } from './MyModule.types';
+
+   declare class MyModule extends NativeModule<MyModuleEvents> {
+      PI: number;
+      hello(): string;
+      setValueAsync(value: string): Promise<void>;
+      createWidget(): void;
+   }
+
+   // This call loads the native module object from the JSI.
+   export default requireNativeModule<MyModule>('MyModule');
+
+Now you can use the module in your app:
+   import MyModule from './modules/my-module/src/MyModule';
+   MyModule.createWidget();
+
+edit modules\my-module\android\src\main\java\expo\modules\mymodule\MyModule.kt
+   package expo.modules.mymodule
+
+   import android.app.PendingIntent
+   import android.appwidget.AppWidgetManager
+   import android.content.ComponentName
+   import android.os.Build
+   import expo.modules.kotlin.modules.Module
+   import expo.modules.kotlin.modules.ModuleDefinition
+   import java.net.URL
+
+   class MyModule : Module() {
+
+      private val contrxt 
+         get() = requireNotNull(appContext.reactContext)
+
+      private val activity
+         get() = requireNotNull(appContext.activityProvider?.currentActivity)
+
+      // Each module class must implement the definition function. The definition consists of components
+      // that describes the module's functionality and behavior.
+      // See https://docs.expo.dev/modules/module-api for more details about available components.
+      override fun definition() = ModuleDefinition {
+         // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
+         // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
+         // The module will be accessible from `requireNativeModule('MyModule')` in JavaScript.
+         Name("MyModule")
+
+         // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
+         Constants(
+               "PI" to Math.PI
+         )
+
+         // Defines event names that the module can send to JavaScript.
+         Events("onChange")
+
+         // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
+         Function("hello") {
+               "Hello world! 👋"
+         }
+
+
+         // Defines a JavaScript function that always returns a Promise and whose native code
+         // is by default dispatched on the different thread than the JavaScript runtime runs on.
+         AsyncFunction("setValueAsync") { value: String ->
+               // Send an event to JavaScript.
+               sendEvent("onChange", mapOf(
+                  "value" to value
+               ))
+         }
+
+         // Enables the module to be used as a native view. Definition components that are accepted as part of
+         // the view definition: Prop, Events.
+         View(MyModuleView::class) {
+               // Defines a setter for the `url` prop.
+               Prop("url") { view: MyModuleView, url: URL ->
+                  view.webView.loadUrl(url.toString())
+               }
+               // Defines an event that the view can send to JavaScript.
+               Events("onLoad")
+         }
+
+         Function("createWidget") {
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                  val appWidgetManager = AppWidgetManager.getInstance(activity)
+                  val provider = ComponentName(activity, MyAppWidgetReceiver::class.java)
+                  if (appWidgetManager.isRequestPinAppWidgetSupported) {
+                     val launchIntent = activity.packageManager.getLaunchIntentForPackage(activity.packageName)
+                     val successCallback = launchIntent?.let {
+                           PendingIntent.getBroadcast(
+                              activity, 0, it,
+                              PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+                           )
+                     }
+                     appWidgetManager.requestPinAppWidget(provider, null, successCallback)
+                  }
+               }
+         }
+      }
+   }
+
+edit modules\my-module\android\build.gradle in android block
+   buildFeatures {
+    compose true
+   }
+   composeOptions {
+      kotlinCompilerExtensionVersion "1.5.15"
+   }
+   packagingOptions {
+      resources {
+         excludes += '/META-INF/{AL2.0,LGPL2.1}'
+      }
+   }
+
+edit modules\my-module\android\build.gradle (add at the bottom)
+dependencies {
+    // Glance App Widgets
+    implementation "androidx.glance:glance-appwidget:1.1.1"
+    implementation "androidx.glance:glance-material3:1.1.1"
+    
+    // Compose
+    implementation platform('androidx.compose:compose-bom:2024.02.00')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+}
+
+
+
+Create a function 
+   1. register a function in MyModule.ts
+   2. create the function in mymodule.kt
+

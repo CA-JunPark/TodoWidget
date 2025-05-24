@@ -38,3 +38,5 @@ yarn-error.*
 app-example
 .qodo
 package-lock.json
+
+modules/my-module/android/build

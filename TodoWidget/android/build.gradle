@@ -1,5 +1,4 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
@@ -39,3 +38,4 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
