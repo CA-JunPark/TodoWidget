@@ -38,7 +38,7 @@ class MyWidget : GlanceAppWidget() {
                         .padding(30.dp)
                 ) {
                     Text(
-                        text = "Hello Widgets ${size.width}",
+                        text = "Hello Widgets ${size.width} ${size.height}",
                         style = TextStyle(
                             color = ColorProvider(
                                 Color(0xFF000000)
